@@ -1,7 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const ejs = require('ejs');
 
 const app = express();
+
+app.set('view engine','ejs');
+
+let resultHistory = [];
 
 mongoose.connect("mongodb://localhost:27017/ciudm", {useNewUrlParser:true, useUnifiedTopology:true});
 
@@ -30,87 +35,107 @@ const criminalSchema = {
 const Criminal = mongoose.model("criminal", criminalSchema);
 
 app.get("/",function(req,res){
-  let totalFieds = 0, totalMatches=0;
+    res.send("hello");
+});
 
-      Criminal.findOne({_id: "5eb6af0dc9387bccf45257ea"}, function(err, suspect){
-        Criminal.find(function(err,criminals){
-        if(suspect.name.fname!==null||criminals[1].name.fname!==null)
-        {
-          totalFieds=totalFieds+1;
-            if(suspect.name.fname===criminals[1].name.fname)
-            {
-                totalMatches=totalMatches+1;
-            }
-        }
-        if(suspect.name.mname!==null||criminals[1].name.mname!==null)
-        {
-          totalFieds=totalFieds+1;
-            if(suspect.name.mname===criminals[1].name.mname)
-            {
-                totalMatches=totalMatches+1;
-            }
-        }
-        if(suspect.name.lname!==null||criminals[1].name.lname!==null)
-        {
-          totalFieds=totalFieds+1;
-            if(suspect.name.lname===criminals[1].name.lname)
-            {
-                totalMatches=totalMatches+1;
-            }
-        }
-        if(suspect.details.skinTone!==null||criminals[1].details.skinTone!==null)
-        {
-          totalFieds=totalFieds+1;
-            if(suspect.details.skinTone===criminals[1].details.skinTone)
-            {
-                totalMatches=totalMatches+1;
-            }
-        }
-        if(suspect.details.eyeColor!==null||criminals[1].details.eyeColor!==null)
-        {
-          totalFieds=totalFieds+1;
-            if(suspect.details.eyeColor===criminals[1].details.eyeColor)
-            {
-                totalMatches=totalMatches+1;
-            }
-        }
-        if(suspect.details.handed!==null||criminals[1].details.handed!==null)
-        {
-          totalFieds=totalFieds+1;
-            if(suspect.details.handed===criminals[1].details.handed)
-            {
-                totalMatches=totalMatches+1;
-            }
-        }
-        if(suspect.vehicle[0]!==null||criminals[1].vehicle[0]!==null)
-        {
-            suspect.vehicle.forEach(function(veh){
-              totalFieds=totalFieds+1;
-                criminals[1].vehicle.forEach(function(vehi){
-                  if(veh===vehi){
-                    totalMatches=totalMatches+1;
+app.get("/match/:sentSuspect", function(req,res){
+  let totalFieds = 0, totalMatches=0;
+  let suspectID=req.params.sentSuspect;
+  let criminalID;
+  let result=[];
+  let itemsProcessed = 0
+      Criminal.findOne({_id: req.params.sentSuspect}, function(err, suspect){
+      Criminal.find({_id: {$ne: suspectID}},function(err,criminals){
+        if(!err){
+          criminals.forEach(function(criminal){
+            itemsProcessed = itemsProcessed+1;
+            criminalID=criminal._id
+            totalFieds=0;
+            totalMatches=0;
+              if(suspect.name.fname!==null||criminal.name.fname!==null)
+              {
+                totalFieds=totalFieds+1;
+                  if(suspect.name.fname===criminal.name.fname)
+                  {
+                      totalMatches=totalMatches+1;
                   }
-                })
-            })
-            // if(suspect.vehicle[0]===criminals[1].vehicle[0])
-            // {
-            //     totalMatches=totalMatches+1;
-            // }
+              }
+              if(suspect.name.mname!==null||criminal.name.mname!==null)
+              {
+                totalFieds=totalFieds+1;
+                  if(suspect.name.mname===criminal.name.mname)
+                  {
+                      totalMatches=totalMatches+1;
+                  }
+              }
+              if(suspect.name.lname!==null||criminal.name.lname!==null)
+              {
+                totalFieds=totalFieds+1;
+                  if(suspect.name.lname===criminal.name.lname)
+                  {
+                      totalMatches=totalMatches+1;
+                  }
+              }
+              if(suspect.details.skinTone!==null||criminal.details.skinTone!==null)
+              {
+                totalFieds=totalFieds+1;
+                  if(suspect.details.skinTone===criminal.details.skinTone)
+                  {
+                      totalMatches=totalMatches+1;
+                  }
+              }
+              if(suspect.details.eyeColor!==null||criminal.details.eyeColor!==null)
+              {
+                totalFieds=totalFieds+1;
+                  if(suspect.details.eyeColor===criminal.details.eyeColor)
+                  {
+                      totalMatches=totalMatches+1;
+                  }
+              }
+              if(suspect.details.handed!==null||criminal.details.handed!==null)
+              {
+                totalFieds=totalFieds+1;
+                  if(suspect.details.handed===criminal.details.handed)
+                  {
+                      totalMatches=totalMatches+1;
+                  }
+              }
+              if(suspect.vehicle[0]!==null||criminal.vehicle[0]!==null)
+              {
+                  suspect.vehicle.forEach(function(veh){
+                    totalFieds=totalFieds+1;
+                      criminal.vehicle.forEach(function(vehi){
+                        if(veh===vehi){
+                          totalMatches=totalMatches+1;
+                        }
+                      })
+                  })
+                  // if(suspect.vehicle[0]===criminal.vehicle[0])
+                  // {
+                  //     totalMatches=totalMatches+1;
+                  // }
+              }
+              if(suspect.nationality!==null||criminal.nationality!==null)
+              {
+                totalFieds=totalFieds+1;
+                  if(suspect.nationality===criminal.nationality)
+                  {
+                      totalMatches=totalMatches+1;
+                  }
+              }
+            let percent = ((totalMatches/totalFieds)*100);
+            result = [...result, {id: criminalID, matchScore: percent}];
+            console.log("Total Comparisons of Not Null fields : " + totalFieds);
+            console.log("Total Match Found : " + totalMatches);
+            console.log("Percent : " + percent+"%");
+          });
         }
-        if(suspect.nationality!==null||criminals[1].nationality!==null)
-        {
-          totalFieds=totalFieds+1;
-            if(suspect.nationality===criminals[1].nationality)
-            {
-                totalMatches=totalMatches+1;
-            }
+        else{
+          console.log(err);
         }
-      let percent = ((totalMatches/totalFieds)*100);
-      console.log("Total Comparisons of Not Null fields : " + totalFieds);
-      console.log("Total Match Found : " + totalMatches);
-      console.log("Percent : " + percent+"%");
   });
 });
+res.send("Hello");
 });
 
 app.listen(3000, function(err){

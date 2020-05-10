@@ -1,0 +1,16 @@
+body{
+  /* text-align: center; */
+  background-color: #F5F5F5;
+}
+
+.card{
+  margin: auto;
+  margin-top: 10%;
+  width: 30%;
+  border: none;
+  background-color: #F5F5F5;
+}
+
+.invalid-credential{
+    color: red;
+}

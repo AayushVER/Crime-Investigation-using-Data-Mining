@@ -1,0 +1,30 @@
+.navbar{
+  padding-top: 2%;
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+}
+
+.suspectForm{
+  margin-top: 4%;
+}
+
+hr{
+  color: #ecf0f1;
+}
+
+.example{
+  padding-left: 0px;
+  border-left: 0px;
+}
+
+.submitButton{
+   text-align: center;
+}
+
+.dateInput{
+  width: auto;
+}
+
+.crime-inputs{
+  margin-top: 6px;
+}

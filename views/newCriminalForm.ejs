@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/newCriminal.css">
+  </head>
+  <body>
+
+  <nav class="navbar">
+    <div class="container">
+        <h2 class="nav-brand">Add Criminal Details</h2>
+    </div>
+  </nav>
+  <div class="container form-container">
+    <form class="suspectForm" action="/newSuspectForm" method="post">
+      <div class="form-group">
+        <h5>Name Details</h5>
+        <div class="row">
+            <div class="col-sm">
+                <input class="form-control" type="text" name="fname" placeholder="First Name">
+            </div>
+            <div class="col-sm">
+                <input class="form-control" type="text" name="mname" placeholder="Middle Name">
+            </div>
+            <div class="col-sm">
+                <input class="form-control" type="text" name="lname" placeholder="Last Name">
+            </div>
+        </div>
+
+        <hr>
+
+        <h5>Address & Details</h5>
+
+            <div class="row">
+                <div class="col-sm">
+                    <input class="form-control" type="text" name="adress" placeholder="Enter Short Address">
+                </div>
+                <div class="col-sm">
+                    <input class="form-control" type="text" name="city" placeholder="City">
+                </div>
+                <div class="col-sm">
+                    <input class="form-control" type="text" name="state" placeholder="State">
+                </div>
+                <div class="col-sm">
+                    <input class="form-control" type="text" name="Nationality" placeholder="Nationality">
+                </div>
+            </div>
+
+            <hr>
+
+        <h5>Crime Detail</h5>
+        <div class="row">
+            <div class="col-sm">
+                <input class="form-control crime-input" type="text" name="crime" placeholder="Crime" describedby="example">
+            </div>
+            <div class="col-sm example">
+              <div class="input-group-append">
+                  <span class="input-group-text" id="example">e.g., Robbery, Murder, Kidnapping, Chain Snatching, Street Fight</span>
+              </div>
+            </div>
+        </div>
+        <div class="row crime-inputs">
+          <div class="col-sm-4">
+            <label>Commited on</label>
+            <input class="form-control dateInput" type="date" name="commitedDate">
+          </div>
+          <div class="col-sm-4">
+            <label>Caught/Arrested on</label>
+            <input class="form-control dateInput" type="date" name="caughtDate">
+          </div>
+      </div>
+      <div class="row crime-inputs">
+          <div class="col-sm-4">
+              <input class="form-control" type="text" name="weaponORtool" placeholder="Weapon/Tool Used">
+          </div>
+          <div class="col-sm-4">
+              <input class="form-control" type="text" name="partnerInCrime" placeholder="Caught/Uncaught Partner">
+          </div>
+      </div>
+
+        <hr>
+
+        <h5>Body Details</h5>
+
+        <div class="row">
+            <div class="col-sm">
+                <input class="form-control" type="text" name="skinTone" placeholder="Skin Tone">
+            </div>
+            <div class="col-sm">
+                <input class="form-control" type="text" name="height" placeholder="Height (ft.inch)">
+            </div>
+            <div class="col-sm">
+                <input class="form-control" type="text" name="handed" placeholder="Handed (Right/Left)">
+            </div>
+            <div class="col-sm">
+                <input class="form-control" type="text" name="eyeColor" placeholder="Color of Eyes">
+            </div>
+        </div>
+
+        <hr>
+
+        <h5>Body Mark (if any ; e.g., Tattoo, Burn Scar, Cut Marks)</h5>
+
+        <div class="row">
+            <div class="col-sm">
+                <input class="form-control" type="text" name="bodyPart" placeholder="Body Part">
+            </div>
+            <div class="col-sm">
+                <input class="form-control" type="text" name="mark" placeholder="Mark">
+            </div>
+        </div>
+
+        <hr>
+
+        <h5>Vehicle</h5>
+
+        <div class="row">
+            <div class="col-sm">
+                <input class="form-control crime-input" type="text" name="vehicle" placeholder="Vehicle (Company_Model_Color)">
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="submitButton">
+            <button type="submit" class="btn btn-primary submitButton" name="button">Find Match</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</body>
+</html>

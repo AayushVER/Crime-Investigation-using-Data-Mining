@@ -21,17 +21,22 @@ const criminalSchema = {
     mname: String,
     lname: String
   },
-  address: String,
+  address: {
+    saddress: String,
+    city: String,
+    state:String
+  },
   typeOfCrime: [],
+  weaponORtool: String,
   details: {
     skinTone: String,
     height: Number,
     eyeColor: String,
     handed: String
   },
-  tatto: {
+  bodyMark: {
     bodyPart: String,
-    design: String
+    mark: String
   },
   vehicle: [],
   nationality: String
@@ -77,11 +82,27 @@ app.get("/dashboard",function(req,res){
   }
 });
 
+app.get("/newSuspectForm",function(req,res){
+    if(isLoggedIn){
+      res.render("newSuspectForm");
+    }else{
+      res.render("login",{message: "*Please Login"});
+    }
+});
+
+app.get("/newCriminalForm", function(req,res){
+    if(isLoggedIn){
+      res.render("newCriminalForm");
+    }else{
+      res.render("login",{message: "*Please Login"});
+    }
+});
+
 app.get("/operation", function(req, res){
   if(isLoggedIn){
     res.send("You can perform task")
   }else{
-    res.render("login",{message: "*Please Login before requesting any operation"});
+    // res.render("login",{message: "*Please Login before requesting any operation"});
   }
 });
 
@@ -138,6 +159,30 @@ app.get("/match/:sentSuspect", function(req,res){
                       totalMatches=totalMatches+1;
                   }
               }
+              if(suspect.adress.sadress!==null||criminal.adress.saddress!==null)
+              {
+                  totalFieds=totalFieds+1;
+                  if(suspect.adress.sadress===criminal.adress.saddress)
+                  {
+                    totalMatches=totalMatches+1;
+                  }
+              }
+              if(suspect.adress.city!==null||criminal.adress.city!==null)
+              {
+                  totalFieds=totalFieds+1;
+                  if(suspect.adress.city===criminal.adress.city)
+                  {
+                    totalMatches=totalMatches+1;
+                  }
+              }
+              if(suspect.adress.state!==null||criminal.adress.state!==null)
+              {
+                  totalFieds=totalFieds+1;
+                  if(suspect.adress.state===criminal.adress.state)
+                  {
+                    totalMatches=totalMatches+1;
+                  }
+              }
               if(suspect.typeOfCrime[0]!==null||criminal.typeOfCrime[0]!==null)
               {
                   suspect.typeOfCrime.forEach(function(susCrime){
@@ -148,6 +193,14 @@ app.get("/match/:sentSuspect", function(req,res){
                         }
                       })
                   })
+              }
+              if(suspect.weaponORtool!==null||criminal.weaponORtool!==null)
+              {
+                totalFieds=totalFieds+1;
+                  if(suspect.weaponORtool===criminal.weaponORtool)
+                  {
+                      totalMatches=totalMatches+1;
+                  }
               }
               if(suspect.details.skinTone!==null||criminal.details.skinTone!==null)
               {

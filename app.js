@@ -58,7 +58,7 @@ app.post("/login",function(req,res){
         if(user.username===username&&user.password===password){
           isLoggedIn = true;
           currentUserId = user._id;
-          res.send("Logged In");
+          res.redirect("/dashboard");
         }else{
           res.render("login", {message: "*Invalid Credentials. Please try again"});
         }
@@ -67,6 +67,14 @@ app.post("/login",function(req,res){
       }
     });
 
+});
+
+app.get("/dashboard",function(req,res){
+  if(isLoggedIn){
+    res.render("dashboard")
+  }else{
+    res.render("login",{message: "*Please Login"});
+  }
 });
 
 app.get("/operation", function(req, res){

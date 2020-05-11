@@ -1,0 +1,36 @@
+body{
+  background-color: white;
+}
+
+.dashboard-body{
+  background-color: #f1f2f6;
+  height: 250px;;
+}
+
+.card{
+  margin-top: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  background-color: #dcdde1;
+  color: #576574;
+  max-width: 250px;
+  border: none;
+}
+
+.card:hover{
+  background-color: #a4b0be;
+}
+
+h2{
+  padding-top: 80px;
+  color: #2d3436;
+}
+
+a{
+  text-decoration: none;
+}
+
+a:hover{
+  text-decoration: none;
+}

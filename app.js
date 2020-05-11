@@ -15,7 +15,7 @@ let isLoggedIn = false;
 let currentUserId;
 mongoose.connect("mongodb://localhost:27017/ciudm", {useNewUrlParser:true, useUnifiedTopology:true});
 
-const criminalSchema = {
+const suspectSchema = {
   name: {
     fname: String,
     mname: String,
@@ -42,11 +42,43 @@ const criminalSchema = {
   nationality: String
 };
 
+const criminalSchema = {
+  name: {
+    fname: String,
+    mname: String,
+    lname: String
+  },
+  address: {
+    saddress: String,
+    city: String,
+    state:String
+  },
+  nationality: String,
+  typeOfCrime: [],
+  commitedDate: Date,
+  caughtORarrestDate: Date,
+  weaponORtool: String,
+  partner: String,
+  details: {
+    skinTone: String,
+    height: Number,
+    handed: String,
+    eyeColor: String
+  },
+  bodyMark: {
+    bodyPart: String,
+    mark: String
+  },
+  vehicle: []
+};
+
+
 const userSchema = {
   username : String,
   password: String
 }
 
+const Suspect = mongoose.model("suspect", suspectSchema);
 const Criminal = mongoose.model("criminal", criminalSchema);
 const User = mongoose.model("user", userSchema);
 
@@ -82,6 +114,11 @@ app.get("/dashboard",function(req,res){
   }
 });
 
+app.post("/dashboard",function(req,res){
+    isLoggedIn=false;
+    res.redirect("/")
+});
+
 app.get("/newSuspectForm",function(req,res){
     if(isLoggedIn){
       res.render("newSuspectForm");
@@ -96,6 +133,46 @@ app.get("/newCriminalForm", function(req,res){
     }else{
       res.render("login",{message: "*Please Login"});
     }
+});
+
+app.post("/newCriminalForm", function(req,res){
+    const newCriminal = new Criminal({
+      name: {
+        fname: req.body.fname,
+        mname: req.body.mname,
+        lname: req.body.lname
+      },
+      address: {
+        saddress: req.body.saddress,
+        city: req.body.city,
+        state:req.body.state
+      },
+      nationality: req.body.nationality,
+      typeOfCrime: [req.body.crime],
+      commitedDate: req.body.commitedDate,
+      caughtORarrestDate: req.body.caughtDate,
+      weaponORtool: req.body.weaponORtool,
+      partner: req.body.partnerInCrime,
+      details: {
+        skinTone: req.body.skinTone,
+        height: req.body.height,
+        handed: req.body.handed,
+        eyeColor: req.body.eyeColor
+      },
+      bodyMark: {
+        bodyPart: req.body.bodyPart,
+        mark: req.body.mark
+      },
+      vehicle: [req.body.vehicle]
+    });
+
+    newCriminal.save(function(err){
+      if(!err){
+        res.redirect("/dashboard");
+      }else{
+        res.send(err);
+      }
+    });
 });
 
 app.get("/operation", function(req, res){
@@ -128,7 +205,7 @@ app.get("/match/:sentSuspect", function(req,res){
   let criminalID;
   let result=[];
   let itemsProcessed = 0
-      Criminal.findOne({_id: req.params.sentSuspect}, function(err, suspect){
+      Suspect.findOne({_id: req.params.sentSuspect}, function(err, suspect){
       Criminal.find({_id: {$ne: suspectID}},function(err,criminals){
           criminals.forEach(function(criminal){
             itemsProcessed = itemsProcessed+1;

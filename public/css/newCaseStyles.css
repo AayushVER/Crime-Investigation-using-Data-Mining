@@ -1,0 +1,38 @@
+.navbar{
+  padding-top: 2%;
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+}
+
+.newCaseForm{
+  margin-top: 4%;
+}
+
+hr{
+  color: #ecf0f1;
+}
+
+.submitButton{
+   text-align: center;
+}
+
+.newCase-instruction{
+    color: red;
+}
+
+textarea{
+  margin-top: 5px;
+}
+
+.radio-options{
+  margin-left: 1%;
+}
+
+.required
+{
+    color: red;
+}
+
+.marking{
+  display: flex;
+}

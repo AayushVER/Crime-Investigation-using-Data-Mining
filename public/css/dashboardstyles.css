@@ -2,9 +2,19 @@ body{
   background-color: white;
 }
 
+.navbar{
+  height: 100px;
+}
+
 .dashboard-body{
   background-color: #f1f2f6;
   height: 250px;;
+}
+
+.success-message{
+  margin-left: 10%;
+  margin-top: 100px;
+  color: green;
 }
 
 .card{

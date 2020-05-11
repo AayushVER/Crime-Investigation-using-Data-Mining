@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/newCaseStyles.css">
+  </head>
+  <body>
+
+  <nav class="navbar">
+    <div class="container">
+        <h2 class="nav-brand">New Case</h2>
+    </div>
+  </nav>
+    <div class="container form-container">
+      <form class="newCaseForm" action="/newCase" method="post">
+        <div class="form-group">
+          <p class="newCase-instruction">* marked fields are mandatory.</p>
+          <h5>Case Detail</h5>
+          <div class="row">
+            <div class="col-sm-3 marking">
+                <input class="form-control" type="text" name="caseId" placeholder="Case ID" required autocomplete="off"><span class="required">*</span>
+            </div>
+          </div>
+
+          <hr>
+
+          <h5>Case Details</h5>
+          <div class="row">
+            <div class="col-sm marking">
+                <input class="form-control" type="text" name="caseSubjectOrTitle" placeholder="Case Subject/Title" required autocomplete="off"><span class="required">*</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm marking">
+                <textarea class="form-control" name="caseDescription" rows="5" placeholder="Case Description" required autocomplete="off"></textarea><span class="required">*</span>
+            </div>
+          </div>
+
+          <hr>
+
+          <h5>Crime Location</h5>
+
+              <div class="row">
+                  <div class="col-sm">
+                      <input class="form-control" type="text" name="saddress" placeholder="Location">
+                  </div>
+                  <div class="col-sm">
+                      <input class="form-control" type="text" name="city" placeholder="City">
+                  </div>
+                  <div class="col-sm">
+                      <input class="form-control" type="text" name="state" placeholder="State">
+                  </div>
+              </div>
+
+              <hr>
+
+            <h5>Witness</h5>
+            <div class="row">
+                <div class="col-sm">
+                    <input class="form-control" type="text" name="witness" placeholder="(if any) Name(s) of witness, separated by ','.">
+                </div>
+            </div>
+
+          <hr>
+
+          <h5>Select if information about Suspect/Criminal available</h5>
+          <br>
+          <div class="form-group">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="radio" id="inlineRadio1" value="suspect">
+              <label class="form-check-label" for="inlineRadio1">Suspect</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="radio" id="inlineRadio2" value="criminal">
+              <label class="form-check-label" for="inlineRadio2">Criminal</label>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="submitButton">
+              <button type="submit" class="btn btn-primary" name="button">Register</button>
+          </div>
+
+      </div>
+    </form>
+    </div>
+  </body>
+  </html>

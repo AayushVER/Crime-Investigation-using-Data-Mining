@@ -11,11 +11,25 @@
   </head>
 <body>
 <div class="dashboard-body">
-  <div class="container">
-    <div class="dashboard-head">
-        <h2>Dashboard</h2>
+  <nav class="navbar">
+    <div class="container">
+        <h2 class="nav-brand">Dashboard</h2>
+        <% if(newCaseMessage){ %>
+            <p class="nav-item success-message"><%= newCaseMessage %></p>
+      <%  } %>
     </div>
+  </nav>
+  <div class="container">
       <div class="row">
+        <div class="col-sm">
+        <a href="/newCase">
+          <div class="card">
+            <div class="card-body">
+               <h4 class="card-title">New Case</h4>
+            </div>
+          </div>
+        </a>
+        </div>
           <div class="col-sm">
           <a href="/newSuspectForm">
             <div class="card">
@@ -38,7 +52,7 @@
           <a href="/getAllCriminals">
             <div class="card">
               <div class="card-body">
-                 <h4 class="card-title">View All Criminal</h4>
+                 <h4 class="card-title">List of all Criminal</h4>
               </div>
             </div>
           </a>

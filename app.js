@@ -12,10 +12,24 @@ app.use(express.static('public'));
 
 let resultHistory = [];
 let isLoggedIn = false;
-let currentUserId;
+// let currentUserId;
+
 mongoose.connect("mongodb://localhost:27017/ciudm", {useNewUrlParser:true, useUnifiedTopology:true});
 
+const caseSchema = {
+  caseId: String,
+  subjectOrTitle: String,
+  description:  String,
+  location: {
+    saddress: String,
+    city: String,
+    state:String
+  },
+  witness: String
+}
+
 const suspectSchema = {
+  caseId: String,
   name: {
     fname: String,
     mname: String,
@@ -26,23 +40,24 @@ const suspectSchema = {
     city: String,
     state:String
   },
+  nationality: String,
   typeOfCrime: [],
   weaponORtool: String,
   details: {
     skinTone: String,
     height: Number,
-    eyeColor: String,
-    handed: String
+    handed: String,
+    eyeColor: String
   },
   bodyMark: {
     bodyPart: String,
     mark: String
   },
-  vehicle: [],
-  nationality: String
+  vehicle: []
 };
 
 const criminalSchema = {
+  caseId: String,
   name: {
     fname: String,
     mname: String,
@@ -78,9 +93,11 @@ const userSchema = {
   password: String
 }
 
+const Case = mongoose.model("case", caseSchema);
 const Suspect = mongoose.model("suspect", suspectSchema);
 const Criminal = mongoose.model("criminal", criminalSchema);
 const User = mongoose.model("user", userSchema);
+
 
 app.get("/",function(req,res){
     res.render("login", {message: ""});
@@ -95,7 +112,7 @@ app.post("/login",function(req,res){
         if(user.username===username&&user.password===password){
           isLoggedIn = true;
           currentUserId = user._id;
-          res.redirect("/dashboard");
+          res.render("dashboard", {newCaseMessage: ""});
         }else{
           res.render("login", {message: "*Invalid Credentials. Please try again"});
         }
@@ -108,7 +125,7 @@ app.post("/login",function(req,res){
 
 app.get("/dashboard",function(req,res){
   if(isLoggedIn){
-    res.render("dashboard")
+    res.render("dashboard", {newCaseMessage: ""})
   }else{
     res.render("login",{message: "*Please Login"});
   }
@@ -119,17 +136,100 @@ app.post("/dashboard",function(req,res){
     res.redirect("/")
 });
 
-app.get("/newSuspectForm",function(req,res){
+app.get("/newCase", function(req,res){
     if(isLoggedIn){
-      res.render("newSuspectForm");
+
+      res.render("newCase");
     }else{
       res.render("login",{message: "*Please Login"});
     }
 });
 
+app.post("/newCase", function(req,res){
+    if(isLoggedIn){
+      let caseId = req.body.caseId;
+        const newCase = new Case({
+          caseId: req.body.caseId,
+          subjectOrTitle: req.body.caseSubjectOrTitle,
+          description: req.body.caseDescription,
+          location: {
+            saddress: req.body.saddress,
+            city: req.body.city,
+            state: req.body.state
+          },
+          witness: req.body.witness
+        });
+
+        newCase.save(function(err){
+          if(!err){
+            if(req.body.radio!==null){
+                if(req.body.radio==="suspect"){
+                  res.render("newSuspectForm", {cid:caseId,newCaseMessage: "Case registered successfully!"});
+                }else if(req.body.radio==="criminal"){
+                  res.render("newCriminalForm", {cid:caseId,newCaseMessage: "Case registered successfully!"})
+                }else{
+                    res.render("dashboard", {newCaseMessage: "Case registered successfully!"});
+                }
+            }else{
+              res.render("dashboard", {newCaseMessage: "Case registered successfully!"});
+            }
+          }
+        })
+    }else{
+      res.render("login",{message: "*Please Login"});
+    }
+});
+
+app.get("/newSuspectForm",function(req,res){
+    if(isLoggedIn){
+      res.render("newSuspectForm", {cid:"",newCaseMessage: ""});
+    }else{
+      res.render("login",{message: "*Please Login"});
+    }
+});
+
+app.post("/newSuspectForm", function(req,res){
+      const newSuspect= new Suspect({
+        caseId: req.body.caseId,
+        name: {
+          fname: req.body.fname,
+          mname: req.body.mname,
+          lname: req.body.lname
+        },
+        address: {
+          saddress: req.body.saddress,
+          city: req.body.city,
+          state:req.body.state
+        },
+        nationality: req.body.nationality,
+        typeOfCrime: [req.body.crime],
+        weaponORtool: req.body.weaponORtool,
+        details: {
+          skinTone: req.body.skinTone,
+          height: req.body.height,
+          handed: req.body.handed,
+          eyeColor: req.body.eyeColor
+        },
+        bodyMark: {
+          bodyPart: req.body.bodyPart,
+          mark: req.body.mark
+        },
+        vehicle: [req.body.vehicle]
+      });
+
+      newSuspect.save(function(err){
+        if(!err){
+          res.render("dashboard", {newCaseMessage: ""});
+        }else{
+          res.send(err);
+        }
+      });
+
+});
+
 app.get("/newCriminalForm", function(req,res){
     if(isLoggedIn){
-      res.render("newCriminalForm");
+      res.render("newCriminalForm", {cid:"",newCaseMessage: ""});
     }else{
       res.render("login",{message: "*Please Login"});
     }
@@ -137,6 +237,7 @@ app.get("/newCriminalForm", function(req,res){
 
 app.post("/newCriminalForm", function(req,res){
     const newCriminal = new Criminal({
+      caseId: req.body.caseId,
       name: {
         fname: req.body.fname,
         mname: req.body.mname,
@@ -168,7 +269,7 @@ app.post("/newCriminalForm", function(req,res){
 
     newCriminal.save(function(err){
       if(!err){
-        res.redirect("/dashboard");
+        res.render("dashboard", {newCaseMessage: ""});
       }else{
         res.send(err);
       }
@@ -337,4 +438,4 @@ app.listen(3000, function(err){
   if(!err){
     console.log("Server Started on Port 3000");
   }
-})
+});

@@ -19,6 +19,22 @@
   <div class="container form-container">
     <form class="suspectForm" action="/newCriminalForm" method="post">
       <div class="form-group">
+        <% if(newCaseMessage){ %>
+            <p class="success-message"><%= newCaseMessage %></p>
+      <%  } %>
+        <h5>Case ID</h5>
+        <div class="row">
+          <div class="col-sm-3">
+            <% if(cid){ %>
+              <input class="form-control" type="text" name="caseId" placeholder="Case ID" value="<%= cid %>" disabled>
+          <%  } else{ %>
+              <input class="form-control" type="text" name="caseId" placeholder="Enter Case ID">
+          <%  } %>
+          </div>
+        </div>
+
+        <hr>
+
         <h5>Name Details</h5>
         <div class="row">
             <div class="col-sm">

@@ -28,3 +28,7 @@ hr{
 .crime-inputs{
   margin-top: 6px;
 }
+
+.success-message{
+  color: green;
+}

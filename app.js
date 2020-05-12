@@ -167,7 +167,7 @@ app.post("/newCase", function(req,res){
            city: req.body.city,
            state: req.body.state
           },
-          witness: [witnessList]
+          witness: witnessList
         });
 
         newCase.save(function(err){
@@ -215,8 +215,8 @@ app.post("/newSuspectForm", function(req,res){
           state:req.body.state
         },
         nationality: req.body.nationality,
-        typeOfCrime: [typeOfCrimeList],
-        weaponORtool: [weaponORtoolList],
+        typeOfCrime: typeOfCrimeList,
+        weaponORtool: weaponORtoolList,
         details: {
           skinTone: req.body.skinTone,
           height: {
@@ -231,7 +231,7 @@ app.post("/newSuspectForm", function(req,res){
           bodyPart: req.body.bodyPart,
           mark: req.body.mark
         },
-        vehicle: [vehicleList]
+        vehicle: vehicleList
       });
 
       newSuspect.save(function(err){
@@ -269,10 +269,10 @@ app.post("/newCriminalForm", function(req,res){
         state:req.body.state
       },
       nationality: req.body.nationality,
-      typeOfCrime: [typeOfCrimeList],
+      typeOfCrime: typeOfCrimeList,
       commitedDate: req.body.commitedDate,
       caughtORarrestDate: req.body.caughtDate,
-      weaponORtool: [weaponORtoolList],
+      weaponORtool: weaponORtoolList,
       partner: req.body.partnerInCrime,
       details: {
         skinTone: req.body.skinTone,
@@ -288,7 +288,7 @@ app.post("/newCriminalForm", function(req,res){
         bodyPart: req.body.bodyPart,
         mark: req.body.mark
       },
-      vehicle: [vehicleList]
+      vehicle: vehicleList
     });
 
     newCriminal.save(function(err){
@@ -338,46 +338,61 @@ app.get("/match/:sentSuspect", function(req,res){
             criminalID=criminal._id
             totalFields=0;
             totalMatches=0;
-              if(suspect.name.fname!==null&&criminal.name.fname!==null)
+              if(suspect.name.fname!==""&&criminal.name.fname!=="")
               {
+                console.log("fname activated");
                 totalFields=totalFields+1;
                   if(suspect.name.fname===criminal.name.fname)
                   {
+                      console.log("fname equal activated");
                       totalMatches=totalMatches+1;
                   }
               }
-              if(suspect.name.mname!==null&&criminal.name.mname!==null)
+              if(suspect.name.mname!==""&&criminal.name.mname!=="")
               {
+                console.log("mname activated");
                 totalFields=totalFields+1;
                   if(suspect.name.mname===criminal.name.mname)
                   {
+                    console.log("mname equal activated");
                       totalMatches=totalMatches+1;
                   }
               }
-              if(suspect.name.lname!==null&&criminal.name.lname!==null)
+              if(suspect.name.lname!==""&&criminal.name.lname!=="")
               {
+                console.log("lname activated");
                 totalFields=totalFields+1;
                   if(suspect.name.lname===criminal.name.lname)
                   {
+                      console.log("lname equal activated");
                       totalMatches=totalMatches+1;
                   }
               }
-              if(suspect.adress.sadress!==null&&criminal.adress.saddress!==null)
+              if(suspect.address.saddress!==""&&criminal.address.saddress!=="")
               {
+                console.log("before saddress");
+                console.log("totalFields : "+totalFields);
+                console.log("totalMatches : "+totalMatches);
+                console.log("saddress activated");
                 let flag=0;
                 totalFields=totalFields+1;
-                if(suspect.adress.sadress===criminal.adress.saddress){
+                if(suspect.address.saddress===criminal.address.saddress){
+                  console.log("saddress equal activated");
                     totalMatches=totalMatches+1;
                 }else{
-                  str1=suspect.adress.sadress.toLowerCase().split(" ");
-                  str2=criminal.adress.saddress.toLowerCase().split(" ");
+                  str1=suspect.address.saddress.toLowerCase().split(" ");
+                  console.log("str1 : "+str1);
+                  str2=criminal.address.saddress.toLowerCase().split(" ");
+                  console.log("str2 : "+str2);
                   str1.forEach(function(str11){
                       str2.forEach(function(str22){
                         if(str11===str22){
+                          console.log("str11 & str22 equal activated for " + str1 +" "+ str2);
                           if(flag===0){
                             totalMatches=totalMatches+0.5;
                             flag=1;
                           }else if(flag===1){
+                            console.log("activated with flag 1");
                             totalFields=totalFields+1;
                             totalMatches=totalMatches+1;
                           }
@@ -385,111 +400,158 @@ app.get("/match/:sentSuspect", function(req,res){
                       })
                   })
                 }
+                console.log("after Saddress");
+                console.log("totalFields : "+totalFields);
+                console.log("totalMatches : "+totalMatches);
               }
-              if(suspect.adress.city!==null&&criminal.adress.city!==null)
+              if(suspect.address.city!==""&&criminal.address.city!=="")
               {
+                  console.log("city activated");
                   totalFields=totalFields+1;
-                  if(suspect.adress.city===criminal.adress.city)
+                  if(suspect.address.city===criminal.address.city)
                   {
+                    console.log("city equals");
                     totalMatches=totalMatches+1;
                   }
+                  console.log("after city");
+                  console.log("totalFields : "+totalFields);
+                  console.log("totalMatches : "+totalMatches);
               }
-              if(suspect.adress.state!==null&&criminal.adress.state!==null)
+              if(suspect.address.state!==""&&criminal.address.state!=="")
               {
+                console.log("state activated");
                   totalFields=totalFields+1;
-                  if(suspect.adress.state===criminal.adress.state)
+                  if(suspect.address.state===criminal.address.state)
                   {
+                    console.log("State Equals");
                     totalMatches=totalMatches+1;
                   }
+                  console.log("after State");
+                  console.log("totalFields : "+totalFields);
+                  console.log("totalMatches : "+totalMatches);
               }
-              if(suspect.nationality!==null&&criminal.nationality!==null)
+              if(suspect.nationality!==""&&criminal.nationality!=="")
               {
+                console.log("nationality Activated");
                 totalFields=totalFields+1;
                 if(suspect.nationality===criminal.nationality)
                 {
+                  console.log("nationality equals");
                   totalMatches=totalMatches+1;
                 }
+                console.log("after nationality");
+                console.log("totalFields : "+totalFields);
+                console.log("totalMatches : "+totalMatches);
               }
-              if(suspect.typeOfCrimeLis[0]!==null&&criminal.typeOfCrime[0]!==null)
+              if(suspect.typeOfCrime[0]!==""&&criminal.typeOfCrime[0]!=="")
               {
+                console.log("Type of Crime Activated");
                   suspect.typeOfCrime.forEach(function(suspectCrime){
-                      totalFields=totalFields+1;
                       criminal.typeOfCrime.forEach(function(criminalCrime){
+                        totalFields=totalFields+1;
                           if(suspectCrime===criminalCrime){
+                            console.log("crime equals");
                             totalMatches=totalMatches+1;
                         }
                       });
                   });
+                  console.log("after type of crime");
+                  console.log("totalFields : "+totalFields);
+                  console.log("totalMatches : "+totalMatches);
               }
-              if(suspect.weaponORtool[0]!==null&&criminal.weaponORtool[0]!==null)
+              if(suspect.weaponORtool[0]!==""&&criminal.weaponORtool[0]!=="")
               {
+                console.log("wOt activated");
                   suspect.weaponORtool.forEach(function(suspectWT){
-                      totalFields=totalFields+1;
                       criminal.weaponORtool.forEach(function(criminalWT){
+                        totalFields=totalFields+1;
                           if(suspectWT===criminalWT){
+                            console.log("wOt equals");
                             totalMatches=totalMatches+1;
                         }
                       });
                   });
+                  console.log("after type of wOt");
+                  console.log("totalFields : "+totalFields);
+                  console.log("totalMatches : "+totalMatches);
               }
-              // if(suspect.weaponORtool!==null&&criminal.weaponORtool!==null)
-              // {
-              //   totalFields=totalFields+1;
-              //     if(suspect.weaponORtool===criminal.weaponORtool)
-              //     {
-              //         totalMatches=totalMatches+1;
-              //     }
-              // }
-              if(suspect.details.skinTone!==null&&criminal.details.skinTone!==null)
+              if(suspect.details.skinTone!==""&&criminal.details.skinTone!=="")
               {
+                console.log("skinTone activated");
                 totalFields=totalFields+1;
                   if(suspect.details.skinTone===criminal.details.skinTone)
                   {
+                    console.log("skinTone equals");
                       totalMatches=totalMatches+1;
                   }
+                  console.log("after type of SkinTone");
+                  console.log("totalFields : "+totalFields);
+                  console.log("totalMatches : "+totalMatches);
               }
-              if(suspect.details.height.ft!==null&&criminal.details.ft!==null)
+              if(suspect.details.height.ft!==""&&criminal.details.ft!=="")
               {
+                console.log("height activated");
                 totalFields=totalFields+1;
-                let criminalHeightInNumbers = (criminal.details.ft*12) + criminal.details.in;
-                let suspectHeightInNumbers = (suspect.details.ft*12) + suspect.details.in;
+                let criminalHeightInNumbers = (criminal.details.height.ft*12)+criminal.details.height.in;
+                let suspectHeightInNumbers= (suspect.details.height.ft*12)+suspect.details.height.in;;
+                console.log(criminalHeightInNumbers+" "+suspectHeightInNumbers);
                 let upperLimit=criminalHeightInNumbers+2, lowerLimit=criminalHeightInNumbers-2;
                   if(suspectHeightInNumbers>=lowerLimit&&suspectHeightInNumbers<=upperLimit){
+                    console.log("height equals");
                       totalMatches=totalMatches+0.5;
                   }
+                  console.log("after type of height");
+                  console.log("totalFields : "+totalFields);
+                  console.log("totalMatches : "+totalMatches);
               }
-              if(suspect.details.eyeColor!==null&&criminal.details.eyeColor!==null)
+              if(suspect.details.eyeColor!==""&&criminal.details.eyeColor!=="")
               {
                 totalFields=totalFields+1;
                   if(suspect.details.eyeColor===criminal.details.eyeColor)
                   {
+                    console.log("Eye Color Equals");
                       totalMatches=totalMatches+1;
                   }
+                  console.log("after type of eyeColor");
+                  console.log("totalFields : "+totalFields);
+                  console.log("totalMatches : "+totalMatches);
               }
-              if(suspect.details.handed!==null&&criminal.details.handed!==null)
+              if(suspect.details.handed!==""&&criminal.details.handed!=="")
               {
                 totalFields=totalFields+1;
                   if(suspect.details.handed===criminal.details.handed)
                   {
+                    console.log("hand equals");
                       totalMatches=totalMatches+1;
                   }
+                  console.log("after type of Handed");
+                  console.log("totalFields : "+totalFields);
+                  console.log("totalMatches : "+totalMatches);
               }
-              if(suspect.bodyMark.bodyPart!==null&&criminal.bodyMark.bodyPart!==null)
+              if(suspect.bodyMark.bodyPart!==""&&criminal.bodyMark.bodyPart!=="")
               {
+                console.log("body part activated");
                 totalFields=totalFields+1;
                 if(suspect.bodyMark.bodyPart===criminal.bodyMark.bodyPart){
+                  console.log("body part equals");
                     totalMatches=totalMatches+1;
                 }
+                console.log("after type of body part");
+                console.log("totalFields : "+totalFields);
+                console.log("totalMatches : "+totalMatches);
               }
-              if(suspect.bodyMark.mark!==null&&criminal.bodyMark.mark!==null)
+              if(suspect.bodyMark.mark!==""&&criminal.bodyMark.mark!=="")
               {
                 totalFields=totalFields+1;
                 if(suspect.bodyMark.mark===criminal.bodyMark.mark){
                     totalMatches=totalMatches+1;
                 }
               }
-              if(suspect.vehicle[0]!==null||criminal.vehicle[0]!==null)
+              if(suspect.vehicle[0]!==""&&criminal.vehicle[0]!=="")
               {
+                console.log("Vehicle Activated");
+                console.log("suspect vehicle : "+suspect.vehicle[0]);
+                console.log("Criminal Vehicle : "+criminal.vehicle[0]);
                   suspect.vehicle.forEach(function(suspectVehicle){
                     totalFields=totalFields+1;
                       criminal.vehicle.forEach(function(criminalVehicle){
@@ -498,6 +560,9 @@ app.get("/match/:sentSuspect", function(req,res){
                         }
                       })
                   })
+                  console.log("after type of Vehicle");
+                  console.log("totalFields : "+totalFields);
+                  console.log("totalMatches : "+totalMatches);
               }
             let percent = ((totalMatches/totalFields)*100);
             result = [...result, {id: criminalID, matchScore: percent}];

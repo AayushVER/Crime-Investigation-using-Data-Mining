@@ -4,7 +4,7 @@
   color: #7f8c8d;
 }
 
-.suspectForm{
+.criminnalForm{
   margin-top: 4%;
 }
 
@@ -31,4 +31,16 @@ hr{
 
 .success-message{
   color: green;
+}
+
+.height-input{
+  display: inline ;
+}
+
+.select-list{
+  width: 60px;
+}
+
+option{
+  text-align: center;
 }

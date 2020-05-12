@@ -28,3 +28,15 @@ hr{
 .success-message{
   color: green;
 }
+
+.height-input{
+  display: inline ;
+}
+
+.select-list{
+  width: 70px;
+}
+
+option{
+  text-align: center;
+}

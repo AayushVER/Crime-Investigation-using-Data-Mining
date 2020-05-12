@@ -63,7 +63,7 @@
                     <input class="form-control" type="text" name="state" placeholder="State">
                 </div>
                 <div class="col-sm">
-                    <input class="form-control" type="text" name="Nationality" placeholder="Nationality">
+                    <input class="form-control" type="text" name="nationality" placeholder="Nationality">
                 </div>
             </div>
 
@@ -92,18 +92,70 @@
         <h5>Body Details</h5>
 
         <div class="row">
+          <div class="col-sm">
+                <select class="custom-select" name="skinTone">
+                  <option selected value="">Skin Tone</option>
+                  <option value="fair">Fair</option>
+                  <option value="brown">Brown</option>
+                  <option value="darkbrown">Dark Brown</option>
+                </select>
+          </div>
+          <div class="col-sm">
+            <input class="form-control" type="text" name="eyeColor" placeholder="Color of Eyes">
+          </div>
+            <div class="col-sm height-input">
+              <label>Height</label>
+                  <select class="custom-select select-list" name="heightFt">
+                    <option selected value="">ft</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                  </select>
+
+                  <select class="custom-select select-list" name="heightIn">
+                    <option selected value="">in</option>
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                  </select>
+            </div>
+          </div>
+          <div class="row crime-inputs">
+            <div class="col-sm height-input">
+                  <select class="custom-select" name="handed">
+                    <option selected value="">Handed</option>
+                    <option value="right">Right</option>
+                    <option value="left">Left</option>
+                  </select>
+            </div>
+
             <div class="col-sm">
-                <input class="form-control" type="text" name="skinTone" placeholder="Skin Tone">
+                  <select class="custom-select" name="bodyFit">
+                    <option selected value="">Body Fat</option>
+                    <option value="skinny">Skinny</option>
+                    <option value="slim">Slim</option>
+                    <option value="normal">Normal</option>
+                    <option value="fat">Fat</option>
+                  </select>
             </div>
             <div class="col-sm">
-                <input class="form-control" type="text" name="height" placeholder="Height (ft.inch)">
+
             </div>
-            <div class="col-sm">
-                <input class="form-control" type="text" name="handed" placeholder="Handed (Right/Left)">
-            </div>
-            <div class="col-sm">
-                <input class="form-control" type="text" name="eyeColor" placeholder="Color of Eyes">
-            </div>
+
         </div>
 
         <hr>

@@ -17,7 +17,7 @@ let isLoggedIn = false;
 mongoose.connect("mongodb://localhost:27017/ciudm", {useNewUrlParser:true, useUnifiedTopology:true});
 
 const caseSchema = {
-  caseId: String,
+  _id: String,
   subjectOrTitle: String,
   description:  String,
   location: {
@@ -45,9 +45,13 @@ const suspectSchema = {
   weaponORtool: String,
   details: {
     skinTone: String,
-    height: Number,
+    height: {
+      ft: Number,
+      in: Number
+    },
     handed: String,
-    eyeColor: String
+    eyeColor: String,
+    bodyFit: String
   },
   bodyMark: {
     bodyPart: String,
@@ -76,9 +80,13 @@ const criminalSchema = {
   partner: String,
   details: {
     skinTone: String,
-    height: Number,
+    height: {
+      ft: Number,
+      in: Number
+    },
     handed: String,
-    eyeColor: String
+    eyeColor: String,
+    bodyFit: String
   },
   bodyMark: {
     bodyPart: String,
@@ -146,16 +154,18 @@ app.get("/newCase", function(req,res){
 });
 
 app.post("/newCase", function(req,res){
+  console.log("post request triggered");
     if(isLoggedIn){
       let caseId = req.body.caseId;
+
         const newCase = new Case({
-          caseId: req.body.caseId,
+          _id: req.body.caseId,
           subjectOrTitle: req.body.caseSubjectOrTitle,
           description: req.body.caseDescription,
           location: {
-            saddress: req.body.saddress,
-            city: req.body.city,
-            state: req.body.state
+           saddress: req.body.saddress,
+           city: req.body.city,
+           state: req.body.state
           },
           witness: req.body.witness
         });
@@ -206,9 +216,13 @@ app.post("/newSuspectForm", function(req,res){
         weaponORtool: req.body.weaponORtool,
         details: {
           skinTone: req.body.skinTone,
-          height: req.body.height,
+          height: {
+                ft: req.body.heightFt,
+                in: req.body.heightIn
+              },
           handed: req.body.handed,
-          eyeColor: req.body.eyeColor
+          eyeColor: req.body.eyeColor,
+          bodyFit: req.body.bodyFit
         },
         bodyMark: {
           bodyPart: req.body.bodyPart,
@@ -236,6 +250,8 @@ app.get("/newCriminalForm", function(req,res){
 });
 
 app.post("/newCriminalForm", function(req,res){
+  console.log(req.body.heightFt);
+  console.log(req.body.heightIn);
     const newCriminal = new Criminal({
       caseId: req.body.caseId,
       name: {
@@ -256,9 +272,13 @@ app.post("/newCriminalForm", function(req,res){
       partner: req.body.partnerInCrime,
       details: {
         skinTone: req.body.skinTone,
-        height: req.body.height,
+        height: {
+              ft: req.body.heightFt,
+              in: req.body.heightIn
+            },
         handed: req.body.handed,
-        eyeColor: req.body.eyeColor
+        eyeColor: req.body.eyeColor,
+        bodyFit: req.body.bodyFit
       },
       bodyMark: {
         bodyPart: req.body.bodyPart,
@@ -305,11 +325,12 @@ app.get("/match/:sentSuspect", function(req,res){
   let suspectID=req.params.sentSuspect;
   let criminalID;
   let result=[];
-  let itemsProcessed = 0
+  let str1,str2;
+
       Suspect.findOne({_id: req.params.sentSuspect}, function(err, suspect){
-      Criminal.find({_id: {$ne: suspectID}},function(err,criminals){
+      // Criminal.find({_id: {$ne: suspectID}},function(err,criminals){
+      Criminal.find(function(err,criminals){
           criminals.forEach(function(criminal){
-            itemsProcessed = itemsProcessed+1;
             criminalID=criminal._id
             totalFieds=0;
             totalMatches=0;
@@ -339,11 +360,21 @@ app.get("/match/:sentSuspect", function(req,res){
               }
               if(suspect.adress.sadress!==null||criminal.adress.saddress!==null)
               {
-                  totalFieds=totalFieds+1;
-                  if(suspect.adress.sadress===criminal.adress.saddress)
-                  {
+                if(suspect.adress.sadress===criminal.adress.saddress){
+                    totalFieds=totalFieds+1;
                     totalMatches=totalMatches+1;
-                  }
+                }else{
+                  str1=suspect.adress.sadress.toLowerCase().split(" ");
+                  str2=criminal.adress.saddress.toLowerCase().split(" ");
+                  str1.forEach(function(str11){
+                    totalFieds=totalFieds+1;
+                      str2.forEach(function(str22){
+                        if(str11===str22){
+                            totalMatches=totalMatches+1;
+                        }
+                      })
+                  })
+                }
               }
               if(suspect.adress.city!==null||criminal.adress.city!==null)
               {
@@ -361,16 +392,28 @@ app.get("/match/:sentSuspect", function(req,res){
                     totalMatches=totalMatches+1;
                   }
               }
+              if(suspect.nationality!==null||criminal.nationality!==null)
+              {
+                totalFieds=totalFieds+1;
+                if(suspect.nationality===criminal.nationality)
+                {
+                  totalMatches=totalMatches+1;
+                }
+              }
               if(suspect.typeOfCrime[0]!==null||criminal.typeOfCrime[0]!==null)
               {
-                  suspect.typeOfCrime.forEach(function(susCrime){
-                    totalFieds=totalFieds+1;
-                      criminal.typeOfCrime.forEach(function(criCrime){
-                        if(susCrime===criCrime){
-                          totalMatches=totalMatches+1;
-                        }
-                      })
-                  })
+                  totalFieds=totalFieds+1;
+                  if(suspect.typeOfCrime[0]===criminal.typeOfCrime[0]){
+                           totalMatches=totalMatches+1;
+                  }
+                  // suspect.typeOfCrime.forEach(function(susCrime){
+                  //   totalFieds=totalFieds+1;
+                  //     criminal.typeOfCrime.forEach(function(criCrime){
+                  //       if(susCrime===criCrime){
+                  //         totalMatches=totalMatches+1;
+                  //       }
+                  //     })
+                  // })
               }
               if(suspect.weaponORtool!==null||criminal.weaponORtool!==null)
               {
@@ -383,6 +426,15 @@ app.get("/match/:sentSuspect", function(req,res){
               if(suspect.details.skinTone!==null||criminal.details.skinTone!==null)
               {
                 totalFieds=totalFieds+1;
+                  if(suspect.details.skinTone===criminal.details.skinTone)
+                  {
+                      totalMatches=totalMatches+1;
+                  }
+              }
+              if(suspect.details.height.ft!==null||criminal.details.ft!==null)
+              {
+                totalFieds=totalFieds+1;
+
                   if(suspect.details.skinTone===criminal.details.skinTone)
                   {
                       totalMatches=totalMatches+1;
@@ -414,14 +466,6 @@ app.get("/match/:sentSuspect", function(req,res){
                         }
                       })
                   })
-              }
-              if(suspect.nationality!==null||criminal.nationality!==null)
-              {
-                totalFieds=totalFieds+1;
-                  if(suspect.nationality===criminal.nationality)
-                  {
-                      totalMatches=totalMatches+1;
-                  }
               }
             let percent = ((totalMatches/totalFieds)*100);
             result = [...result, {id: criminalID, matchScore: percent}];

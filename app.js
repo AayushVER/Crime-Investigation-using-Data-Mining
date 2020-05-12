@@ -25,7 +25,7 @@ const caseSchema = {
     city: String,
     state:String
   },
-  witness: String
+  witness: []
 }
 
 const suspectSchema = {
@@ -42,7 +42,7 @@ const suspectSchema = {
   },
   nationality: String,
   typeOfCrime: [],
-  weaponORtool: String,
+  weaponORtool: [],
   details: {
     skinTone: String,
     height: {
@@ -76,7 +76,7 @@ const criminalSchema = {
   typeOfCrime: [],
   commitedDate: Date,
   caughtORarrestDate: Date,
-  weaponORtool: String,
+  weaponORtool: [],
   partner: String,
   details: {
     skinTone: String,
@@ -94,7 +94,6 @@ const criminalSchema = {
   },
   vehicle: []
 };
-
 
 const userSchema = {
   username : String,
@@ -157,6 +156,7 @@ app.post("/newCase", function(req,res){
   console.log("post request triggered");
     if(isLoggedIn){
       let caseId = req.body.caseId;
+      let witnessList = req.body.witness.split(" ");
 
         const newCase = new Case({
           _id: req.body.caseId,
@@ -167,7 +167,7 @@ app.post("/newCase", function(req,res){
            city: req.body.city,
            state: req.body.state
           },
-          witness: req.body.witness
+          witness: [witnessList]
         });
 
         newCase.save(function(err){
@@ -199,6 +199,9 @@ app.get("/newSuspectForm",function(req,res){
 });
 
 app.post("/newSuspectForm", function(req,res){
+    let typeOfCrimeList = req.body.crime.split(" ");
+    let vehicleList = req.body.vehicle.split(" ");
+    let weaponORtoolList = req.body.weaponORtool.split(" ")
       const newSuspect= new Suspect({
         caseId: req.body.caseId,
         name: {
@@ -212,8 +215,8 @@ app.post("/newSuspectForm", function(req,res){
           state:req.body.state
         },
         nationality: req.body.nationality,
-        typeOfCrime: [req.body.crime],
-        weaponORtool: req.body.weaponORtool,
+        typeOfCrime: [typeOfCrimeList],
+        weaponORtool: [weaponORtoolList],
         details: {
           skinTone: req.body.skinTone,
           height: {
@@ -228,7 +231,7 @@ app.post("/newSuspectForm", function(req,res){
           bodyPart: req.body.bodyPart,
           mark: req.body.mark
         },
-        vehicle: [req.body.vehicle]
+        vehicle: [vehicleList]
       });
 
       newSuspect.save(function(err){
@@ -250,8 +253,9 @@ app.get("/newCriminalForm", function(req,res){
 });
 
 app.post("/newCriminalForm", function(req,res){
-  console.log(req.body.heightFt);
-  console.log(req.body.heightIn);
+  let typeOfCrimeList = req.body.crime.split(" ");
+  let vehicleList = req.body.vehicle.split(" ");
+  let weaponORtoolList = req.body.weaponORtool.split(" ")
     const newCriminal = new Criminal({
       caseId: req.body.caseId,
       name: {
@@ -265,10 +269,10 @@ app.post("/newCriminalForm", function(req,res){
         state:req.body.state
       },
       nationality: req.body.nationality,
-      typeOfCrime: [req.body.crime],
+      typeOfCrime: [typeOfCrimeList],
       commitedDate: req.body.commitedDate,
       caughtORarrestDate: req.body.caughtDate,
-      weaponORtool: req.body.weaponORtool,
+      weaponORtool: [weaponORtoolList],
       partner: req.body.partnerInCrime,
       details: {
         skinTone: req.body.skinTone,
@@ -284,7 +288,7 @@ app.post("/newCriminalForm", function(req,res){
         bodyPart: req.body.bodyPart,
         mark: req.body.mark
       },
-      vehicle: [req.body.vehicle]
+      vehicle: [vehicleList]
     });
 
     newCriminal.save(function(err){
@@ -321,7 +325,7 @@ app.post("/register",function(req,res){
 });
 
 app.get("/match/:sentSuspect", function(req,res){
-  let totalFieds = 0, totalMatches=0;
+  let totalFields = 0, totalMatches=0;
   let suspectID=req.params.sentSuspect;
   let criminalID;
   let result=[];
@@ -332,150 +336,178 @@ app.get("/match/:sentSuspect", function(req,res){
       Criminal.find(function(err,criminals){
           criminals.forEach(function(criminal){
             criminalID=criminal._id
-            totalFieds=0;
+            totalFields=0;
             totalMatches=0;
-              if(suspect.name.fname!==null||criminal.name.fname!==null)
+              if(suspect.name.fname!==null&&criminal.name.fname!==null)
               {
-                totalFieds=totalFieds+1;
+                totalFields=totalFields+1;
                   if(suspect.name.fname===criminal.name.fname)
                   {
                       totalMatches=totalMatches+1;
                   }
               }
-              if(suspect.name.mname!==null||criminal.name.mname!==null)
+              if(suspect.name.mname!==null&&criminal.name.mname!==null)
               {
-                totalFieds=totalFieds+1;
+                totalFields=totalFields+1;
                   if(suspect.name.mname===criminal.name.mname)
                   {
                       totalMatches=totalMatches+1;
                   }
               }
-              if(suspect.name.lname!==null||criminal.name.lname!==null)
+              if(suspect.name.lname!==null&&criminal.name.lname!==null)
               {
-                totalFieds=totalFieds+1;
+                totalFields=totalFields+1;
                   if(suspect.name.lname===criminal.name.lname)
                   {
                       totalMatches=totalMatches+1;
                   }
               }
-              if(suspect.adress.sadress!==null||criminal.adress.saddress!==null)
+              if(suspect.adress.sadress!==null&&criminal.adress.saddress!==null)
               {
+                let flag=0;
+                totalFields=totalFields+1;
                 if(suspect.adress.sadress===criminal.adress.saddress){
-                    totalFieds=totalFieds+1;
                     totalMatches=totalMatches+1;
                 }else{
                   str1=suspect.adress.sadress.toLowerCase().split(" ");
                   str2=criminal.adress.saddress.toLowerCase().split(" ");
                   str1.forEach(function(str11){
-                    totalFieds=totalFieds+1;
                       str2.forEach(function(str22){
                         if(str11===str22){
+                          if(flag===0){
+                            totalMatches=totalMatches+0.5;
+                            flag=1;
+                          }else if(flag===1){
+                            totalFields=totalFields+1;
                             totalMatches=totalMatches+1;
+                          }
                         }
                       })
                   })
                 }
               }
-              if(suspect.adress.city!==null||criminal.adress.city!==null)
+              if(suspect.adress.city!==null&&criminal.adress.city!==null)
               {
-                  totalFieds=totalFieds+1;
+                  totalFields=totalFields+1;
                   if(suspect.adress.city===criminal.adress.city)
                   {
                     totalMatches=totalMatches+1;
                   }
               }
-              if(suspect.adress.state!==null||criminal.adress.state!==null)
+              if(suspect.adress.state!==null&&criminal.adress.state!==null)
               {
-                  totalFieds=totalFieds+1;
+                  totalFields=totalFields+1;
                   if(suspect.adress.state===criminal.adress.state)
                   {
                     totalMatches=totalMatches+1;
                   }
               }
-              if(suspect.nationality!==null||criminal.nationality!==null)
+              if(suspect.nationality!==null&&criminal.nationality!==null)
               {
-                totalFieds=totalFieds+1;
+                totalFields=totalFields+1;
                 if(suspect.nationality===criminal.nationality)
                 {
                   totalMatches=totalMatches+1;
                 }
               }
-              if(suspect.typeOfCrime[0]!==null||criminal.typeOfCrime[0]!==null)
+              if(suspect.typeOfCrimeLis[0]!==null&&criminal.typeOfCrime[0]!==null)
               {
-                  totalFieds=totalFieds+1;
-                  if(suspect.typeOfCrime[0]===criminal.typeOfCrime[0]){
-                           totalMatches=totalMatches+1;
-                  }
-                  // suspect.typeOfCrime.forEach(function(susCrime){
-                  //   totalFieds=totalFieds+1;
-                  //     criminal.typeOfCrime.forEach(function(criCrime){
-                  //       if(susCrime===criCrime){
-                  //         totalMatches=totalMatches+1;
-                  //       }
-                  //     })
-                  // })
+                  suspect.typeOfCrime.forEach(function(suspectCrime){
+                      totalFields=totalFields+1;
+                      criminal.typeOfCrime.forEach(function(criminalCrime){
+                          if(suspectCrime===criminalCrime){
+                            totalMatches=totalMatches+1;
+                        }
+                      });
+                  });
               }
-              if(suspect.weaponORtool!==null||criminal.weaponORtool!==null)
+              if(suspect.weaponORtool[0]!==null&&criminal.weaponORtool[0]!==null)
               {
-                totalFieds=totalFieds+1;
-                  if(suspect.weaponORtool===criminal.weaponORtool)
-                  {
-                      totalMatches=totalMatches+1;
-                  }
+                  suspect.weaponORtool.forEach(function(suspectWT){
+                      totalFields=totalFields+1;
+                      criminal.weaponORtool.forEach(function(criminalWT){
+                          if(suspectWT===criminalWT){
+                            totalMatches=totalMatches+1;
+                        }
+                      });
+                  });
               }
-              if(suspect.details.skinTone!==null||criminal.details.skinTone!==null)
+              // if(suspect.weaponORtool!==null&&criminal.weaponORtool!==null)
+              // {
+              //   totalFields=totalFields+1;
+              //     if(suspect.weaponORtool===criminal.weaponORtool)
+              //     {
+              //         totalMatches=totalMatches+1;
+              //     }
+              // }
+              if(suspect.details.skinTone!==null&&criminal.details.skinTone!==null)
               {
-                totalFieds=totalFieds+1;
+                totalFields=totalFields+1;
                   if(suspect.details.skinTone===criminal.details.skinTone)
                   {
                       totalMatches=totalMatches+1;
                   }
               }
-              if(suspect.details.height.ft!==null||criminal.details.ft!==null)
+              if(suspect.details.height.ft!==null&&criminal.details.ft!==null)
               {
-                totalFieds=totalFieds+1;
-
-                  if(suspect.details.skinTone===criminal.details.skinTone)
-                  {
-                      totalMatches=totalMatches+1;
+                totalFields=totalFields+1;
+                let criminalHeightInNumbers = (criminal.details.ft*12) + criminal.details.in;
+                let suspectHeightInNumbers = (suspect.details.ft*12) + suspect.details.in;
+                let upperLimit=criminalHeightInNumbers+2, lowerLimit=criminalHeightInNumbers-2;
+                  if(suspectHeightInNumbers>=lowerLimit&&suspectHeightInNumbers<=upperLimit){
+                      totalMatches=totalMatches+0.5;
                   }
               }
-              if(suspect.details.eyeColor!==null||criminal.details.eyeColor!==null)
+              if(suspect.details.eyeColor!==null&&criminal.details.eyeColor!==null)
               {
-                totalFieds=totalFieds+1;
+                totalFields=totalFields+1;
                   if(suspect.details.eyeColor===criminal.details.eyeColor)
                   {
                       totalMatches=totalMatches+1;
                   }
               }
-              if(suspect.details.handed!==null||criminal.details.handed!==null)
+              if(suspect.details.handed!==null&&criminal.details.handed!==null)
               {
-                totalFieds=totalFieds+1;
+                totalFields=totalFields+1;
                   if(suspect.details.handed===criminal.details.handed)
                   {
                       totalMatches=totalMatches+1;
                   }
               }
+              if(suspect.bodyMark.bodyPart!==null&&criminal.bodyMark.bodyPart!==null)
+              {
+                totalFields=totalFields+1;
+                if(suspect.bodyMark.bodyPart===criminal.bodyMark.bodyPart){
+                    totalMatches=totalMatches+1;
+                }
+              }
+              if(suspect.bodyMark.mark!==null&&criminal.bodyMark.mark!==null)
+              {
+                totalFields=totalFields+1;
+                if(suspect.bodyMark.mark===criminal.bodyMark.mark){
+                    totalMatches=totalMatches+1;
+                }
+              }
               if(suspect.vehicle[0]!==null||criminal.vehicle[0]!==null)
               {
-                  suspect.vehicle.forEach(function(veh){
-                    totalFieds=totalFieds+1;
-                      criminal.vehicle.forEach(function(vehi){
-                        if(veh===vehi){
+                  suspect.vehicle.forEach(function(suspectVehicle){
+                    totalFields=totalFields+1;
+                      criminal.vehicle.forEach(function(criminalVehicle){
+                        if(suspectVehicle===criminalVehicle){
                           totalMatches=totalMatches+1;
                         }
                       })
                   })
               }
-            let percent = ((totalMatches/totalFieds)*100);
+            let percent = ((totalMatches/totalFields)*100);
             result = [...result, {id: criminalID, matchScore: percent}];
-            console.log("Total Comparisons of Not Null fields : " + totalFieds);
+            console.log("Total Comparisons of Not Null fields : " + totalFields);
             console.log("Total Match Found : " + totalMatches);
             console.log("Percent : " + percent+"%");
           });
   });
 });
-res.send("Hello");
+// res.render("matchResult", {matchResult:result});
 });
 
 app.listen(3000, function(err){

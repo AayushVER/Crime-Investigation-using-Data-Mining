@@ -2,9 +2,6 @@ body{
   background-color: white;
 }
 
-.navbar{
-  height: 100px;
-}
 
 .dashboard-body{
   background-color: #f1f2f6;
@@ -17,8 +14,14 @@ body{
   color: green;
 }
 
-.card{
+.failure-message{
+  margin-left: 10%;
   margin-top: 100px;
+  color: red;
+}
+
+.card{
+  margin-top: 50px;
   margin-left: auto;
   margin-right: auto;
   text-align: center;
@@ -33,7 +36,6 @@ body{
 }
 
 h2{
-  padding-top: 80px;
   color: #2d3436;
 }
 

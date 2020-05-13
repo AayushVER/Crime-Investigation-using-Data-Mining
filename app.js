@@ -119,12 +119,12 @@ app.post("/login",function(req,res){
         if(user.username===username&&user.password===password){
           isLoggedIn = true;
           currentUserId = user._id;
-          res.render("dashboard", {newCaseMessage: ""});
+          res.render("dashboard", {dashboardMessage: "", failureDashboardMessage:""});
         }else{
-          res.render("login", {message: "*Invalid Credentials. Please try again"});
+          res.render("login", {message: "*Invalid Credentials. Please try again."});
         }
       }else{
-        res.render("login", {message: "*Invalid Credentials. Please try again"});
+        res.render("login", {message: "*Invalid Credentials. Please try again."});
       }
     });
 
@@ -132,7 +132,7 @@ app.post("/login",function(req,res){
 
 app.get("/dashboard",function(req,res){
   if(isLoggedIn){
-    res.render("dashboard", {newCaseMessage: ""})
+    res.render("dashboard", {newCaseMessage: "", failureDashboardMessage:""})
   }else{
     res.render("login",{message: "*Please Login"});
   }
@@ -178,10 +178,10 @@ app.post("/newCase", function(req,res){
                 }else if(req.body.radio==="criminal"){
                   res.render("newCriminalForm", {cid:caseId,newCaseMessage: "Case registered successfully!"})
                 }else{
-                    res.render("dashboard", {newCaseMessage: "Case registered successfully!"});
+                    res.render("dashboard", {dashboardMessage: "Case registered successfully!",failureDashboardMessage:""} );
                 }
             }else{
-              res.render("dashboard", {newCaseMessage: "Case registered successfully!"});
+              res.render("dashboard", {dashboardMessage: "Case registered successfully!",failureDashboardMessage:""});
             }
           }
         })
@@ -237,7 +237,7 @@ app.post("/newSuspectForm", function(req,res){
       newSuspect.save(function(err, thisSuspect){
         if(!err){
           // res.redirect("/match/"+thisSuspect._id)
-          res.render("dashboard", {newCaseMessage: ""});
+          res.render("dashboard", {dashboardMessage: "Suspect added succesfully!",failureDashboardMessage:""});
         }else{
           res.send(err);
         }
@@ -294,9 +294,10 @@ app.post("/newCriminalForm", function(req,res){
 
     newCriminal.save(function(err){
       if(!err){
-        res.render("dashboard", {newCaseMessage: ""});
+        res.render("dashboard", {dashboardMessage: "Criminal added succesfully!",failureDashboardMessage:""});
       }else{
-        res.send(err);
+        console.log(err);
+        res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Operation Failed."});
       }
     });
 });
@@ -333,7 +334,9 @@ app.get("/match/:sentSuspect", function(req,res){
   let str1,str2;
 
       Suspect.findOne({_id: req.params.sentSuspect}, function(err, suspect){
-      // Criminal.find({_id: {$ne: suspectID}},function(err,criminals){
+        if(!err){
+
+
       Criminal.find(function(err,criminals){
           criminals.forEach(function(criminal){
             criminalID=criminal._id
@@ -596,6 +599,9 @@ app.get("/match/:sentSuspect", function(req,res){
           //Criminal Search Ends Here
         })
         //Suspect Search Ends Here
+      }  else {
+          res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"Match task failed. Incorrect Suspect ID might have caused this error."})
+        }
       })
 
       // res.send(finalResult);

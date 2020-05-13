@@ -20,13 +20,16 @@ const caseSchema = {
   _id: String,
   subjectOrTitle: String,
   description:  String,
+  victims: [],
+  weaponORtool: [],
+  time: String,
   location: {
     saddress: String,
     city: String,
     state:String
   },
   witness: []
-}
+};
 
 const suspectSchema = {
   caseId: String,
@@ -100,7 +103,7 @@ const criminalSchema = {
 const userSchema = {
   username : String,
   password: String
-}
+};
 
 const Case = mongoose.model("case", caseSchema);
 const Suspect = mongoose.model("suspect", suspectSchema);
@@ -158,12 +161,17 @@ app.post("/newCase", function(req,res){
   console.log("post request triggered");
     if(isLoggedIn){
       let caseId = req.body.caseId;
+      let victimsList = req.body.victims.split(",");
+      let weaponORtoolList = req.body.weaponORtool.split(",");
       let witnessList = req.body.witness.split(",");
 
         const newCase = new Case({
           _id: req.body.caseId,
           subjectOrTitle: req.body.caseSubjectOrTitle,
           description: req.body.caseDescription,
+          victims: victimsList,
+          weaponORtool:weaponORtoolList,
+          time: req.body.time,
           location: {
            saddress: req.body.saddress,
            city: req.body.city,
@@ -174,6 +182,7 @@ app.post("/newCase", function(req,res){
 
         newCase.save(function(err){
           if(!err){
+            console.log("Inside save");
             if(req.body.radio!==null){
                 if(req.body.radio==="suspect"){
                   res.render("newSuspectForm", {cid:caseId,newCaseMessage: "Case registered successfully!"});
@@ -207,6 +216,15 @@ app.get("/cases", function(req,res){
   }
 });
 
+app.get("/findcase/:caseId", function(req,res){
+    Case.findOne({_id:req.params.caseId}, function(err,foundCase){
+      if(!err){
+          res.render("viewCase", {caseDetails: foundCase});
+      }else{
+        res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Something went wrong. Try again later."});
+      }
+    })
+});
 
 app.get("/newSuspectForm",function(req,res){
     if(isLoggedIn){
@@ -217,10 +235,10 @@ app.get("/newSuspectForm",function(req,res){
 });
 
 app.post("/newSuspectForm", function(req,res){
-    let typeOfCrimeList = req.body.crime.split(" ");
-    let vehicleList = req.body.vehicle.split(" ");
-    let weaponORtoolList = req.body.weaponORtool.split(" ");
-    let chargesList = req.body.charges.split(" ");
+    let typeOfCrimeList = req.body.crime.split(",");
+    let vehicleList = req.body.vehicle.split(",");
+    let weaponORtoolList = req.body.weaponORtool.split(",");
+    let chargesList = req.body.charges.split(",");
       const newSuspect= new Suspect({
         caseId: req.body.caseId,
         name: {
@@ -274,10 +292,10 @@ app.get("/newCriminalForm", function(req,res){
 });
 
 app.post("/newCriminalForm", function(req,res){
-  let typeOfCrimeList = req.body.crime.split(" ");
-  let vehicleList = req.body.vehicle.split(" ");
-  let weaponORtoolList = req.body.weaponORtool.split(" ");
-  let chargesList = req.body.charges.split(" ");
+  let typeOfCrimeList = req.body.crime.split(",");
+  let vehicleList = req.body.vehicle.split(",");
+  let weaponORtoolList = req.body.weaponORtool.split(",");
+  let chargesList = req.body.charges.split(",");
     const newCriminal = new Criminal({
       caseId: req.body.caseId,
       name: {

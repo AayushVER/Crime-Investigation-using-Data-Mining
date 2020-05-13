@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/viewCaseStyles.css">
+  </head>
+  <body>
+
+  <nav class="navbar">
+    <div class="container">
+        <h2 class="nav-brand">Case ID : <%= caseDetails._id %></h2>
+    </div>
+  </nav>
+
+    <div class="container case-body">
+
+      <h3 class="title">Case Subject/Title</h3>
+      <h4 class="content"><%= caseDetails.subjectOrTitle %></h4>
+
+      <br>
+
+      <h3 class="title">Case Description</h3>
+      <p class="content"><%=caseDetails.description%></p>
+
+      <hr>
+
+      <h5 class="title">Victim(s)</h5>
+      <div class="victin-witness-box">
+      <%caseDetails.victims.forEach(function(vic){%>
+          <h6 class="content"><%= vic %></h6>
+          <span class="wOt-victim-witness-gap"></span>
+      <%})%>
+      </div>
+
+      <div class="row">
+          <div class="col-sm">
+              <h5 class="title">Weapon(s)/Tool(s)</h5>
+              <%caseDetails.weaponORtool.forEach(function(wOt){%>
+            <%    if(wOt===""||wOt===null){ %>
+                  <h6 class="content">*Information not available</h6>
+            <%    }else{ %>
+                  <h6 class="content"><%= wOt %></h6>
+                  <span class="wOt-victim-witness-gap"></span>
+              <%}})%>
+          </div>
+          <div class="col-sm">
+            <h5 class="title">Time</h5>
+            <h6 class="content"><%=caseDetails.time%></h6>
+          </div>
+      </div>
+
+      <hr>
+
+      <h3 class="title">Location Details</h3>
+      <div class="row">
+          <div class="col-sm">
+              <h5 class="title">Address</h5>
+              <h6 class="content"><%=caseDetails.location.saddress%></h6>
+          </div>
+          <div class="col-sm">
+            <h5 class="title">City</h5>
+            <h6 class="content"><%=caseDetails.location.city%></h6>
+          </div>
+          <div class="col-sm">
+            <h5 class="title">State </h5>
+            <h6 class="content"><%=caseDetails.location.state%></h6>
+          </div>
+      </div>
+
+      <hr>
+
+      <h5 class="title">Witness(s)</h5>
+      <%caseDetails.witness.forEach(function(wit){%>
+          <%    if(wit===""||wit===null){ %>
+          <h6 class="content">*Information not available</h6>
+          <%    }else{ %>
+          <h6 class="content"><%= wit %></h6>
+          <span class="wOt-victim-witness-gap"></span>
+      <%}})%>
+
+      </div>
+    </div>
+ </body>
+</html>

@@ -1,0 +1,25 @@
+.navbar{
+  padding-top: 2%;
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+}
+
+.case-body{
+  margin-top: 4%;
+}
+
+.title{
+  color: #636e72;
+}
+
+.content{
+  color: #95a5a6;
+}
+
+.wOt-victim-witness-gap{
+  width: 25px;
+}
+
+.victim-witness-box{
+    display: flex;
+}

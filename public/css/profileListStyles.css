@@ -30,11 +30,11 @@ td{
 }
 
 .card-body:hover{
-    background-color: #f5f6fa;
+    background-color: #2f3640;
 }
 
-.card{
-  border: none;
+.card:hover{
+  background-color: #2f3640;
 }
 
 a{
@@ -43,7 +43,7 @@ a{
 
 a:hover{
   text-decoration: none;
-  color: #7F8C8D;
+  color: white;
 }
 
 .name-color-match{

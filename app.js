@@ -10,8 +10,8 @@ app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 
-let resultHistory = [];
 let isLoggedIn = false;
+let result=[];
 // let currentUserId;
 
 mongoose.connect("mongodb://localhost:27017/ciudm", {useNewUrlParser:true, useUnifiedTopology:true});
@@ -156,7 +156,7 @@ app.post("/newCase", function(req,res){
   console.log("post request triggered");
     if(isLoggedIn){
       let caseId = req.body.caseId;
-      let witnessList = req.body.witness.split(" ");
+      let witnessList = req.body.witness.split(",");
 
         const newCase = new Case({
           _id: req.body.caseId,
@@ -234,8 +234,9 @@ app.post("/newSuspectForm", function(req,res){
         vehicle: vehicleList
       });
 
-      newSuspect.save(function(err){
+      newSuspect.save(function(err, thisSuspect){
         if(!err){
+          // res.redirect("/match/"+thisSuspect._id)
           res.render("dashboard", {newCaseMessage: ""});
         }else{
           res.send(err);
@@ -328,7 +329,7 @@ app.get("/match/:sentSuspect", function(req,res){
   let totalFields = 0, totalMatches=0;
   let suspectID=req.params.sentSuspect;
   let criminalID;
-  let result=[];
+  let finalResult=[];
   let str1,str2;
 
       Suspect.findOne({_id: req.params.sentSuspect}, function(err, suspect){
@@ -506,6 +507,7 @@ app.get("/match/:sentSuspect", function(req,res){
               }
               if(suspect.details.eyeColor!==""&&criminal.details.eyeColor!=="")
               {
+                console.log("eye color activated");
                 totalFields=totalFields+1;
                   if(suspect.details.eyeColor===criminal.details.eyeColor)
                   {
@@ -518,6 +520,7 @@ app.get("/match/:sentSuspect", function(req,res){
               }
               if(suspect.details.handed!==""&&criminal.details.handed!=="")
               {
+                console.log("Hand activated");
                 totalFields=totalFields+1;
                   if(suspect.details.handed===criminal.details.handed)
                   {
@@ -542,8 +545,10 @@ app.get("/match/:sentSuspect", function(req,res){
               }
               if(suspect.bodyMark.mark!==""&&criminal.bodyMark.mark!=="")
               {
+                console.log("body mark activated");
                 totalFields=totalFields+1;
                 if(suspect.bodyMark.mark===criminal.bodyMark.mark){
+                  console.log("body mark equals");
                     totalMatches=totalMatches+1;
                 }
               }
@@ -565,14 +570,36 @@ app.get("/match/:sentSuspect", function(req,res){
                   console.log("totalMatches : "+totalMatches);
               }
             let percent = ((totalMatches/totalFields)*100);
-            result = [...result, {id: criminalID, matchScore: percent}];
+            let sendBodyMark = criminal.bodyMark.bodyPart+" "+criminal.bodyMark.mark;
+
+            let arrObj = {id: criminalID,firstName:criminal.name.fname,lastName:criminal.name.lname,bodyMark:sendBodyMark,  matchScore: percent}
+            result.push(arrObj);
+            // result = [...result, {id: criminalID,firstName:criminal.name.fname,lastName:criminal.name.lname,bodyMark:sendBodyMark,  matchScore: percent}];
             console.log("Total Comparisons of Not Null fields : " + totalFields);
             console.log("Total Match Found : " + totalMatches);
             console.log("Percent : " + percent+"%");
-          });
-  });
-});
-// res.render("matchResult", {matchResult:result});
+
+            //For Each loop ends here
+          })
+          function sort_result(a, b){
+            if(a.matchScore < b.matchScore){
+                    return 1;
+            }else if(a.matchScore > b.matchScore){
+                    return -1;
+            }else{
+                    return 0;
+            }
+          }
+
+          finalResult = result.sort(sort_result);
+          res.render("matchResult", {matchResultArray:finalResult});
+          //Criminal Search Ends Here
+        })
+        //Suspect Search Ends Here
+      })
+
+      // res.send(finalResult);
+      // res.render("matchResult", {matchResultArray:finalResult});
 });
 
 app.listen(3000, function(err){

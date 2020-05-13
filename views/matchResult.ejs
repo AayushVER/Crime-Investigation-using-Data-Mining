@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/matchResultStyles.css">
+  </head>
+  <body>
+
+  <nav class="navbar">
+    <div class="container">
+        <h2 class="nav-brand">Match Result</h2>
+    </div>
+  </nav>
+  <div class="container match-result-body">
+      <h4>Suspect match against Criminal Database</h4>
+
+      <div class="container">
+
+      <%  if(matchResultArray!==""){ %>
+      <%    matchResultArray.forEach(function(result){ %>
+            <div class="row">
+                <div class="col-sm">
+                    <div class="card">
+                      <a href="/criminal/<%= result.id%> ">
+                        <div class="card-body">
+                            <table>
+                              <tr>
+                                <td class="card-title">
+                                  <div class="inline-name-mark">
+                                    <p><%= result.firstName %></p>
+                                    <p class="lname"><%= result.lastName %></p>
+
+                                  <%  if(result.bodyMark!==" "){ %>
+                                    <span class="span-width"></span>
+                                    <p>Body Mark : <%= result.bodyMark %></p>
+                              <%    } %>
+                                  </div>
+                                </td>
+                                <th class="card-title percent" rowspan="2"><h2><%= result.matchScore%>%</h2></th>
+                              </tr>
+                              <tr>
+                                <td class="card-subtitle">Criminal ID : <%= result.id%></td>
+                              </tr>
+                            </table>
+                        </div>
+                      </a>
+                    </div>
+                </div>
+            </div>
+      <%    }) %>
+      <%  } %>
+      </div>
+</body>
+</html>

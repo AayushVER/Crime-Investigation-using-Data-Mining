@@ -1,0 +1,58 @@
+.navbar{
+  padding-top: 2%;
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+}
+
+hr{
+  color: #ecf0f1;
+}
+
+h4{
+  margin-top: 3%;
+  margin-bottom: 4%;
+}
+
+table{
+  width: 100%;
+}
+
+td{
+  width: 50%;
+}
+
+.row{
+  margin-top: 10px;
+}
+.card-body{
+    background-color: #f5f6fa;
+}
+
+.card{
+  border: none;
+}
+
+a{
+  text-decoration: none;
+}
+
+a:hover{
+  text-decoration: none;
+  color: #7F8C8D;
+}
+
+a{
+  color: #7F8C8D;
+}
+
+.lname{
+  margin-left: 5px;
+}
+
+.span-width{
+    width: 20%;
+}
+
+.inline-name-mark{
+    display: flex;
+}

@@ -26,19 +26,30 @@
             <div class="row">
                 <div class="col-sm">
                     <div class="card">
-                      <a href="/criminal/<%= result.id%> ">
+                      <a class="name-color-match" href="/criminal/<%= result.id%> ">
                         <div class="card-body">
                             <table>
                               <tr>
                                 <td class="card-title">
                                   <div class="inline-name-mark">
-                                    <p><%= result.firstName %></p>
-                                    <p class="lname"><%= result.lastName %></p>
+                                    <h3><%= result.firstName %></h3>
+                                    <h3 class="lname"><%= result.lastName %></h3>
 
-                                  <%  if(result.bodyMark!==" "){ %>
+                                  <% if(result.crimes!==""||result.crimes!==null){ %>
+                                  <% result.crimes.forEach(function(crime){ %>
                                     <span class="span-width"></span>
+                                    <p>Crime(s) : <%= crime %></p>
+                                  <% })} %>
+
+                                  <span class="gap"></span>
+                                  <%  if(result.bodyMark!==" "){ %>
                                     <p>Body Mark : <%= result.bodyMark %></p>
-                              <%    } %>
+                                  <% } %>
+
+                                   <span class="gap"></span>
+                                  <% if(result.shortAddress!==""||result.shortAddress!==null){ %>
+                                  <p>Address : <%= result.shortAddress %></p>
+                                  <% } %>
                                   </div>
                                 </td>
                                 <th class="card-title percent" rowspan="2"><h2><%= result.matchScore%>%</h2></th>
@@ -52,8 +63,8 @@
                     </div>
                 </div>
             </div>
-      <%    }) %>
-      <%  } %>
+          <% }) %>
+      <% } %>
       </div>
 </body>
 </html>

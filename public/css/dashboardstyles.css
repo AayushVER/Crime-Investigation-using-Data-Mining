@@ -2,6 +2,10 @@ body{
   background-color: white;
 }
 
+.navbar{
+  margin-bottom: 10px;
+  height: 150px;
+}
 
 .dashboard-body{
   background-color: #f1f2f6;
@@ -10,13 +14,13 @@ body{
 
 .success-message{
   margin-left: 10%;
-  margin-top: 100px;
+  margin-top: auto;
   color: green;
 }
 
 .failure-message{
   margin-left: 10%;
-  margin-top: 100px;
+  margin-top: auto;
   color: red;
 }
 
@@ -36,7 +40,7 @@ body{
 }
 
 h2{
-  color: #2d3436;
+  color: #576574;
 }
 
 a{

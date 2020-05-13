@@ -192,6 +192,22 @@ app.post("/newCase", function(req,res){
     }
 });
 
+app.get("/cases", function(req,res){
+  if(isLoggedIn){
+      Case.find(function(err,cases){
+        if(!cases||err){
+          res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!"});
+        }else{
+          res.render("caseList", {cases:cases});
+        }
+      })
+  }
+  else{
+    res.render("login",{message: "*Please Login"});
+  }
+});
+
+
 app.get("/newSuspectForm",function(req,res){
     if(isLoggedIn){
       res.render("newSuspectForm", {cid:"",newCaseMessage: ""});

@@ -27,9 +27,9 @@
           <div class="col-sm-3">
             <% if(cid){ %>
               <input class="form-control" type="text" name="caseId" placeholder="Case ID" value="<%= cid %>" disabled>
-          <%  } else{ %>
+                <%  } else{ %>
               <input class="form-control" type="text" name="caseId" placeholder="Enter Case ID">
-          <%  } %>
+            <%  } %>
           </div>
         </div>
 
@@ -38,13 +38,25 @@
         <h5>Name Details</h5>
         <div class="row">
             <div class="col-sm">
+                <% if(retainedSuspect&&retainedSuspect.name.fname!==""){ %>
+                <input class="form-control" type="text" name="fname" placeholder="First Name" value="<%= retainedSuspect.name.fname %>">
+                <%  } else{ %>
                 <input class="form-control" type="text" name="fname" placeholder="First Name">
+                <%  } %>
             </div>
             <div class="col-sm">
+                <% if(retainedSuspect&&retainedSuspect.name.mname!==""){ %>
+                <input class="form-control" type="text" name="mname" placeholder="Middle Name" value="<%= retainedSuspect.name.mname %>">
+                <%  } else{ %>
                 <input class="form-control" type="text" name="mname" placeholder="Middle Name">
+                <%  } %>
             </div>
             <div class="col-sm">
+                <% if(retainedSuspect&&retainedSuspect.name.lname!==""){ %>
+                <input class="form-control" type="text" name="lname" placeholder="Last Name" value="<%= retainedSuspect.name.lname %>">
+                <%  } else{ %>
                 <input class="form-control" type="text" name="lname" placeholder="Last Name">
+                <%  } %>
             </div>
         </div>
 
@@ -54,16 +66,32 @@
 
             <div class="row">
                 <div class="col-sm">
+                    <% if(retainedSuspect&&retainedSuspect.address.saddress!==""){ %>
+                    <input class="form-control" type="text" name="saddress" placeholder="Enter Short Address" value="<%= retainedSuspect.address.saddress %>">
+                    <%  } else{ %>
                     <input class="form-control" type="text" name="saddress" placeholder="Enter Short Address">
+                    <%  } %>
                 </div>
                 <div class="col-sm">
+                    <% if(retainedSuspect&&retainedSuspect.address.city!==""){ %>
+                    <input class="form-control" type="text" name="city" placeholder="City" value="<%= retainedSuspect.address.city %>">
+                    <%  } else{ %>
                     <input class="form-control" type="text" name="city" placeholder="City">
+                    <%  } %>
                 </div>
                 <div class="col-sm">
+                    <% if(retainedSuspect&&retainedSuspect.address.state!==""){ %>
+                    <input class="form-control" type="text" name="state" placeholder="State" value="<%= retainedSuspect.address.state %>">
+                    <%  } else{ %>
                     <input class="form-control" type="text" name="state" placeholder="State">
+                    <%  } %>
                 </div>
                 <div class="col-sm">
+                    <% if(retainedSuspect&&retainedSuspect.nationality!==""){ %>
+                    <input class="form-control" type="text" name="nationality" placeholder="Nationality" value="<%= retainedSuspect.Nationality %>">
+                    <%  } else{ %>
                     <input class="form-control" type="text" name="nationality" placeholder="Nationality">
+                    <%  } %>
                 </div>
             </div>
 
@@ -72,7 +100,7 @@
         <h5>Crime Detail</h5>
         <div class="row">
             <div class="col-sm-6">
-                <input class="form-control crime-input" type="text" name="crime" placeholder="Crime" describedby="example">
+                <input class="form-control crime-input" type="text" name="crime" placeholder="Crime(s)" describedby="example">
             </div>
             <div class="col-sm example">
               <div class="input-group-append">

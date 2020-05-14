@@ -1,0 +1,22 @@
+<% if(pageHeading==="Criminal Record") { %>
+  <div class="row">
+  <div class="col-sm">
+    <h5 class="title">Caught/Uncaught Partner(s)</h5>
+    <% if(!profileDetails.partners||profileDetails.partners==="") {%>
+      <h6 class="content">*Information not available</h6>
+      <%} else {%>
+        <div class="victin-witness-box">
+          <%profileDetails.partners.forEach(function(partner){%>
+        <h6 class="content"><%= partner %></h6>
+        <span class="wOt-victim-witness-gap"></span>
+    <%})}%>
+    </div>
+  </div>
+</div>
+<% } %>
+
+  <div class="col-sm">
+    <h5 class="title">Crime Committed on</h5>
+    <h6 class="content"><%= profileDetails.commitedDate %></h6>
+  </div>
+</div>

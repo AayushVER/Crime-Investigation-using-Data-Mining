@@ -10,7 +10,7 @@ app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 
-let isLoggedIn = true;
+let isLoggedIn = false;
 let result=[];
 // let currentUserId;
 
@@ -23,6 +23,7 @@ const caseSchema = {
   victims: [],
   weaponORtool: [],
   time: String,
+  crimeCommitedOn: Date,
   location: {
     saddress: String,
     city: String,
@@ -79,10 +80,9 @@ const criminalSchema = {
   nationality: String,
   typeOfCrime: [],
   charges:[],
-  commitedDate: Date,
   caughtORarrestDate: Date,
   weaponORtool: [],
-  partner: String,
+  partners: [],
   details: {
     skinTone: String,
     height: {
@@ -172,6 +172,7 @@ app.post("/newCase", function(req,res){
           victims: victimsList,
           weaponORtool:weaponORtoolList,
           time: req.body.time,
+          crimeCommitedOn: req.body.crimeCommitedOn,
           location: {
            saddress: req.body.saddress,
            city: req.body.city,
@@ -226,6 +227,26 @@ app.get("/findcase/:caseId", function(req,res){
     })
 });
 
+app.get("/Criminals/:criminalId", function(req,res){
+  Criminal.findOne({_id:req.params.criminalId}, function(err,criminal){
+    if(!err){
+      res.render("profileView", {profileDetails: criminal,pageHeading:"Criminal Record"});
+    }else{
+      res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Something went wrong. Try again later."});
+    }
+  })
+});
+
+app.get("/Suspects/:suspectId", function(req,res){
+    Suspect.findOne({_id:req.params.suspectId}, function(err,suspect){
+      if(!err){
+          res.render("profileView", {profileDetails: suspect,pageHeading:"Suspect Record"});
+      }else{
+        res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Something went wrong. Try again later."});
+      }
+    })
+});
+
 app.get("/newSuspectForm",function(req,res){
     if(isLoggedIn){
       res.render("newSuspectForm", {cid:"",newCaseMessage: ""});
@@ -233,6 +254,7 @@ app.get("/newSuspectForm",function(req,res){
       res.render("login",{message: "*Please Login"});
     }
 });
+
 
 app.post("/newSuspectForm", function(req,res){
     let typeOfCrimeList = req.body.crime.split(",");
@@ -296,6 +318,7 @@ app.post("/newCriminalForm", function(req,res){
   let vehicleList = req.body.vehicle.split(",");
   let weaponORtoolList = req.body.weaponORtool.split(",");
   let chargesList = req.body.charges.split(",");
+  let partnerList = req.body.partnerInCrime.split(",");
     const newCriminal = new Criminal({
       caseId: req.body.caseId,
       name: {
@@ -310,11 +333,10 @@ app.post("/newCriminalForm", function(req,res){
       },
       nationality: req.body.nationality,
       typeOfCrime: typeOfCrimeList,
-      commitedDate: req.body.commitedDate,
       caughtORarrestDate: req.body.caughtDate,
       weaponORtool: weaponORtoolList,
       charges: chargesList,
-      partner: req.body.partnerInCrime,
+      partners: req.body.partnerList,
       details: {
         skinTone: req.body.skinTone,
         height: {

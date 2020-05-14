@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/profileViewStyles.css">
+  </head>
+  <body>
+
+  <nav class="navbar">
+    <div class="container">
+        <h2 class="nav-brand"><%= pageHeading %></h2>
+    </div>
+  </nav>
+
+      <div class="container profile-body">
+        <h5 class="title">Case ID</h5>
+        <h6 class="content"><%=profileDetails.caseId%></h6>
+        <h5 class="title">Criminal ID</h5>
+        <h6 class="content"><%=profileDetails._id%></h6>
+        <hr>
+
+        <div class="row">
+          <div class="col-sm">
+            <h5 class="title">First Name</h5>
+              <%if (profileDetails.name.fname===""||profileDetails.name.fname===null) {%>
+                  <h6 class="content">*Information not available</h6>
+              <%} else {%>
+                  <h6 class="content"><%=profileDetails.name.fname%></h6>
+              <%}%>
+            </div>
+          <div class="col-sm">
+            <h5 class="title">Middle Name</h5>
+             <%if (profileDetails.name.mname===""||profileDetails.name.mname===null) {%>
+                  <h6 class="content">*Information not available</h6>
+             <%} else {%>
+                  <h6 class="content"><%=profileDetails.name.mname%></h6>
+              <%}%>
+            </div>
+            <div class="col-sm">
+              <h5 class="title">Last Name</h5>
+               <%if (profileDetails.name.lname===""||profileDetails.name.lname===null) {%>
+                  <h6 class="content">*Information not available</h6>
+              <%} else {%>
+                  <h6 class="content"><%=profileDetails.name.lname%></h6>
+              <%}%>
+            </div>
+        </div>
+
+      <hr>
+
+      <h3 class="title">Address Details</h3>
+      <div class="row">
+          <div class="col-sm">
+              <h5 class="title">Address</h5>
+              <%if (profileDetails.address.saddress===""||profileDetails.address.saddress===null) {%>
+                 <h6 class="content">*Information not available</h6>
+             <%} else {%>
+              <h6 class="content"><%=profileDetails.address.saddress%></h6>
+              <%}%>
+          </div>
+          <div class="col-sm">
+            <h5 class="title">City</h5>
+            <%if (profileDetails.address.city===""||profileDetails.address.city===null) {%>
+               <h6 class="content">*Information not available</h6>
+           <%} else {%>
+            <h6 class="content"><%=profileDetails.address.city%></h6>
+            <%}%>
+          </div>
+          <div class="col-sm">
+            <h5 class="title">State</h5>
+            <%if (profileDetails.address.stat===""||profileDetails.address.state===null) {%>
+               <h6 class="content">*Information not available</h6>
+           <%} else {%>
+            <h6 class="content"><%=profileDetails.address.state%></h6>
+            <%}%>
+          </div>
+          <div class="col-sm">
+            <h5 class="title">Nationality</h5>
+            <%if (profileDetails.nationality===""||profileDetails.nationality===null) {%>
+               <h6 class="content">*Information not available</h6>
+           <%} else {%>
+            <h6 class="content"><%=profileDetails.nationality%></h6>
+            <%}%>
+          </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+          <div class="col-sm">
+            <h5 class="title">Crime(s)</h5>
+            <div class="victin-witness-box">
+
+                <h6 class="content"><%= profileDetails.typeOfCrime %></h6>
+                <span class="wOt-victim-witness-gap"></span>
+
+            </div>
+          </div>
+          <div class="col-sm">
+            <h5 class="title">Charge(s)</h5>
+            <% if(!profileDetails.charges||profileDetails.charges==="") {%>
+              <h6 class="content">*Information not available</h6>
+              <%} else {%>
+                <div class="victin-witness-box">
+                <h6 class="content"><%= profileDetails.charges %></h6>
+                <span class="wOt-victim-witness-gap"></span>
+            <%}%>
+            </div>
+          </div>
+          <div class="col-sm">
+            <h5 class="title">Weapon(s)/Tool(s)</h5>
+            <% if(!profileDetails.weaponORtool||profileDetails.weaponORtool==="") {%>
+              <h6 class="content">*Information not available</h6>
+              <%} else {%>
+                <div class="victin-witness-box">
+                <h6 class="content"><%= profileDetails.weaponORtool %></h6>
+                <span class="wOt-victim-witness-gap"></span>
+            <%}%>
+            </div>
+          </div>
+      </div>
+
+      <hr>
+
+      <% if(pageHeading==="Criminal Record") { %>
+        <div class="row">
+        <div class="col-sm">
+          <h5 class="title">Caught/Uncaught Partner(s)</h5>
+          <% if(!profileDetails.partners||profileDetails.partners==="") {%>
+            <h6 class="content">*Information not available</h6>
+            <%} else {%>
+              <div class="victin-witness-box">
+              <h6 class="content"><%= profileDetails.partners %></h6>
+              <span class="wOt-victim-witness-gap"></span>
+          <%}%>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <% } %>
+
+
+      <% if(pageHeading==="Criminal Record") { %>
+        <div class="row">
+        <div class="col-sm">
+          <h5 class="title">Caught on</h5>
+          <% if(!profileDetails.caughtORarrestDate||profileDetails.caughtORarrestDate==="") {%>
+            <h6 class="content">*Criminal not caught yet</h6>
+            <%} else {%>
+              <div class="victin-witness-box">
+              <h6 class="content"><%= profileDetails.caughtORarrestDate %></h6>
+              <span class="wOt-victim-witness-gap"></span>
+          <%}%>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <% } %>
+
+      <h3 class="title">Body Details</h3>
+      <div class="row">
+          <div class="col-sm">
+              <h5 class="title">Skin Tone</h5>
+              <%if (profileDetails.details.skinTone===""||profileDetails.details.skinTone===null) {%>
+                 <h6 class="content">*N/A</h6>
+             <%} else {%>
+              <% let skinToneValue = profileDetails.details.skinTone.substring(0,1).toLocaleUpperCase() + profileDetails.details.skinTone.substring(1); %>
+              <h6 class="content"><%=skinToneValue%></h6>
+              <%}%>
+          </div>
+          <div class="col-sm">
+            <h5 class="title">Eye Color</h5>
+            <%if (profileDetails.details.eyeColor===""||profileDetails.details.eyeColor===null) {%>
+               <h6 class="content">*N/A</h6>
+           <%} else {%>
+            <h6 class="content"><%=profileDetails.details.eyeColor%></h6>
+            <%}%>
+          </div>
+          <div class="col-sm">
+            <h5 class="title">Height</h5>
+            <%if (profileDetails.details.height===""||profileDetails.details.height===null) {%>
+               <h6 class="content">*N/A</h6>
+           <%} else {%>
+            <h6 class="content"><%=profileDetails.details.height.ft%>'<%=profileDetails.details.height.in%></h6>
+            <%}%>
+          </div>
+          <div class="col-sm">
+            <h5 class="title">Handed</h5>
+            <%if (profileDetails.details.handed===""||profileDetails.details.handed===null) {%>
+               <h6 class="content">*N/A</h6>
+           <%} else {%>
+             <% let handedValue = profileDetails.details.handed.substring(0,1).toLocaleUpperCase() + profileDetails.details.handed.substring(1); %>
+            <h6 class="content"><%=handedValue%></h6>
+            <%}%>
+          </div>
+          <div class="col-sm">
+            <h5 class="title">Body Fit</h5>
+            <%if (profileDetails.details.bodyFit===""||profileDetails.details.bodyFit===null) {%>
+               <h6 class="content">*N/A</h6>
+           <%} else {%>
+             <% let bodyFitValue = profileDetails.details.bodyFit.substring(0,1).toLocaleUpperCase() + profileDetails.details.bodyFit.substring(1); %>
+            <h6 class="content"><%=bodyFitValue%></h6>
+            <%}%>
+          </div>
+      </div>
+
+      <hr>
+
+      <h3 class="title">Body Mark</h3>
+      <div class="row">
+          <div class="col-sm">
+              <%if (profileDetails.bodyMark.bodyPart===""&&profileDetails.bodyMark.mark==="") {%>
+                 <h6 class="content">*Information not available</h6>
+             <%} else {%>
+              <h6 class="content"><%=profileDetails.bodyMark.bodyPart%>-<%= profileDetails.bodyMark.mark%></h6>
+              <%}%>
+          </div>
+      </div>
+
+      <hr>
+
+      <h3 class="title">Vehicle(s)</h3>
+      <div class="row">
+          <div class="col-sm">
+              <%if (profileDetails.vehicle===""||profileDetails.vehicle===null) {%>
+                 <h6 class="content">*Information not available</h6>
+             <%} else {%>
+              <h6 class="content"><%=profileDetails.vehicle%></h6>
+              <%}%>
+          </div>
+      </div>
+
+    </div>
+  </body>
+</html>

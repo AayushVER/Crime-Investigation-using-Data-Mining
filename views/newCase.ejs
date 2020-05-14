@@ -8,12 +8,14 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/css/newCaseStyles.css">
+    <link rel="stylesheet" href="/css/navbarStyles.css">
   </head>
   <body>
 
   <nav class="navbar">
     <div class="container">
         <h2 class="nav-brand">New Case</h2>
+        <a href="/dashboard"><img class="nav-item" src="/homeIcon.svg" alt="home-button"></a>
     </div>
   </nav>
     <div class="container form-container">
@@ -42,7 +44,7 @@
           </div>
           <div class="row top-margin">
             <div class="col-sm-6 marking">
-                <input class="form-control" type="text" name="victims" placeholder="Victim(s)" required autocomplete="off"><span class="required">*</span>
+                <input class="form-control" type="text" name="victims" placeholder="Victim(s)" autocomplete="off">
             </div>
             <label>Note: Format - FirstName_LastName,FirstName_LastName</label>
           </div>
@@ -105,7 +107,7 @@
           <hr>
 
           <div class="submitButton">
-              <button type="submit" class="btn btn-primary" name="button">Register</button>
+              <button type="submit" class="btn btn-dark" name="button">Register</button>
           </div>
 
       </div>

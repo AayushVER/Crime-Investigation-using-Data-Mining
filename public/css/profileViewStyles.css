@@ -23,3 +23,12 @@
 .victim-witness-box{
     display: flex;
 }
+
+.matchButton{
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.failure{
+  color: red;
+}

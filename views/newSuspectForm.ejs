@@ -8,12 +8,14 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/css/newSuspectForm.css">
+    <link rel="stylesheet" href="/css/navbarStyles.css">
   </head>
   <body>
 
   <nav class="navbar">
     <div class="container">
         <h2 class="nav-brand">New Suspect</h2>
+        <a href="/dashboard"><img class="nav-item" src="/homeIcon.svg" alt="home-button"></a>
     </div>
   </nav>
   <div class="container form-container">
@@ -25,11 +27,7 @@
         <h5>Case ID</h5>
         <div class="row">
           <div class="col-sm-3">
-            <% if(cid){ %>
-              <input class="form-control" type="text" name="caseId" placeholder="Case ID" value="<%= cid %>" disabled>
-                <%  } else{ %>
-              <input class="form-control" type="text" name="caseId" placeholder="Enter Case ID">
-            <%  } %>
+              <input class="form-control" type="text" name="idCase" value="<%=cid%>">
           </div>
         </div>
 
@@ -188,7 +186,7 @@
         <hr>
 
         <div class="submitButton">
-            <button type="submit" class="btn btn-primary submitButton" name="button">Submit</button>
+            <button type="submit" class="btn btn-dark submitButton" name="button">Submit</button>
         </div>
 
       </div>

@@ -8,16 +8,21 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/css/profileViewStyles.css">
+    <link rel="stylesheet" href="/css/navbarStyles.css">
   </head>
   <body>
 
   <nav class="navbar">
     <div class="container">
         <h2 class="nav-brand"><%= pageHeading %></h2>
+        <a href="/dashboard"><img class="nav-item" src="/homeIcon.svg" alt="home-button"></a>
     </div>
   </nav>
 
       <div class="container profile-body">
+      <%  if(failure){  %>
+          <p class="failure"><%= failure %></p>
+      <%  } %>
         <h5 class="title">Case ID</h5>
         <h6 class="content"><%=profileDetails.caseId%></h6>
         <h5 class="title">Criminal ID</h5>
@@ -234,6 +239,15 @@
               <%}%>
           </div>
       </div>
+
+      <hr>
+    <%  if(pageHeading==="Suspect Record"){ %>
+      <div class="matchButton">
+        <form action="/match/<%= profileDetails._id %>" method="get">
+              <button class="btn btn-dark" type="submit" name="matchWithCriminals">Find Match</button>
+        </form>
+      </div>
+    <%   } %>
 
     </div>
   </body>

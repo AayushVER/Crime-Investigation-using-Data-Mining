@@ -10,7 +10,7 @@ app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 
-let isLoggedIn = false;
+let isLoggedIn = true;
 let result=[];
 // let currentUserId;
 
@@ -112,6 +112,10 @@ const User = mongoose.model("user", userSchema);
 
 
 app.get("/",function(req,res){
+    res.render("login", {message: ""});
+});
+
+app.get("/login",function(req,res){
     res.render("login", {message: ""});
 });
 
@@ -220,7 +224,7 @@ app.get("/cases", function(req,res){
 app.get("/findcase/:caseId", function(req,res){
     Case.findOne({_id:req.params.caseId}, function(err,foundCase){
       if(!err){
-          res.render("viewCase", {caseDetails: foundCase});
+          res.render("viewCase", {caseDetails: foundCase, failure:""});
       }else{
         res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Something went wrong. Try again later."});
       }
@@ -230,7 +234,7 @@ app.get("/findcase/:caseId", function(req,res){
 app.get("/Criminals/:criminalId", function(req,res){
   Criminal.findOne({_id:req.params.criminalId}, function(err,criminal){
     if(!err){
-      res.render("profileView", {profileDetails: criminal,pageHeading:"Criminal Record"});
+      res.render("profileView", {profileDetails: criminal,pageHeading:"Criminal Record",failure:""});
     }else{
       res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Something went wrong. Try again later."});
     }
@@ -240,16 +244,17 @@ app.get("/Criminals/:criminalId", function(req,res){
 app.get("/Suspects/:suspectId", function(req,res){
     Suspect.findOne({_id:req.params.suspectId}, function(err,suspect){
       if(!err){
-          res.render("profileView", {profileDetails: suspect,pageHeading:"Suspect Record"});
+          res.render("profileView", {profileDetails: suspect,pageHeading:"Suspect Record",failure:""});
       }else{
         res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Something went wrong. Try again later."});
       }
     })
 });
 
-app.get("/newSuspectForm",function(req,res){
+app.get("/addSuspect/:caseId",function(req,res){
     if(isLoggedIn){
-      res.render("newSuspectForm", {cid:"",newCaseMessage: ""});
+      let caseId = req.params.caseId;
+      res.render("newSuspectForm", {cid:caseId,newCaseMessage: ""});
     }else{
       res.render("login",{message: "*Please Login"});
     }
@@ -257,12 +262,13 @@ app.get("/newSuspectForm",function(req,res){
 
 
 app.post("/newSuspectForm", function(req,res){
+  console.log("INSIDE Sus POST REQUEST");
     let typeOfCrimeList = req.body.crime.split(",");
     let vehicleList = req.body.vehicle.split(",");
     let weaponORtoolList = req.body.weaponORtool.split(",");
     let chargesList = req.body.charges.split(",");
       const newSuspect= new Suspect({
-        caseId: req.body.caseId,
+        caseId: req.body.idCase,
         name: {
           fname: req.body.fname,
           mname: req.body.mname,
@@ -305,9 +311,10 @@ app.post("/newSuspectForm", function(req,res){
 
 });
 
-app.get("/newCriminalForm", function(req,res){
+app.get("/addCriminal/:caseId", function(req,res){
     if(isLoggedIn){
-      res.render("newCriminalForm", {cid:"",newCaseMessage: ""});
+      let caseId = req.params.caseId;
+      res.render("newCriminalForm", {cid:caseId,newCaseMessage: ""});
     }else{
       res.render("login",{message: "*Please Login"});
     }
@@ -320,7 +327,7 @@ app.post("/newCriminalForm", function(req,res){
   let chargesList = req.body.charges.split(",");
   let partnerList = req.body.partnerInCrime.split(",");
     const newCriminal = new Criminal({
-      caseId: req.body.caseId,
+      caseId: req.body.idCase,
       name: {
         fname: req.body.fname,
         mname: req.body.mname,
@@ -394,6 +401,45 @@ app.get("/suspects", function(req,res){
   }
 });
 
+
+app.get("/suspectsOfCase/:caseId", function(req,res){
+  if(isLoggedIn){
+      Suspect.find({caseId: req.params.caseId},function(err,suspects){
+        if(suspects.length===0){
+          Case.findOne({_id:req.params.caseId}, function(err,foundCase){
+              if(!err){
+                res.render("viewCase", {caseDetails: foundCase, failure: "No suspects in the record. (If any, add them)"});
+        }
+      })
+      }
+      else{
+          res.render("profileList", {pageHeading:"Suspects",profiles:suspects} );
+        }
+      });
+    }else{
+    res.render("login",{message: "*Please Login"});
+};
+});
+
+app.get("/criminalsOfCase/:caseId", function(req,res){
+  if(isLoggedIn){
+      Criminal.find({caseId: req.params.caseId},function(err,criminals){
+        if(criminals.length===0){
+          Case.findOne({_id:req.params.caseId}, function(err,foundCase){
+              if(!err){
+                res.render("viewCase", {caseDetails: foundCase, failure: "No criminals in the record. (If any, add them)"});
+        }
+      })
+  }
+      else{
+          res.render("profileList", {pageHeading:"Criminals",profiles:criminals} );
+        }
+      });
+    }else{
+    res.render("login",{message: "*Please Login"});
+};
+});
+
 app.get("/operation", function(req, res){
   if(isLoggedIn){
     res.send("You can perform task")
@@ -427,10 +473,8 @@ app.get("/match/:sentSuspect", function(req,res){
     let str1,str2;
 
         Suspect.findOne({_id: req.params.sentSuspect}, function(err,suspect){
-        if(!suspect||err){
-            res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"Match task failed. Incorrect Suspect ID might have caused this error."})
-        } else {
           Criminal.find(function(err,criminals){
+          if(criminals.length!==0){
             criminals.forEach(function(criminal){
               criminalID=criminal._id
               totalFields=0;
@@ -690,8 +734,13 @@ app.get("/match/:sentSuspect", function(req,res){
 
             finalResult = result.sort(sort_result);
             res.render("matchResult", {matchResultArray:finalResult});
-          })
+
+            //Criminal Loop Ends Here
+        } else{
+          res.render("profileView", {profileDetails: suspect,pageHeading:"Suspect Record",failure:"No Criminal record to match with"});
         }
+        })
+
         })
   }else{
     res.render("login",{message: "*Please Login"});

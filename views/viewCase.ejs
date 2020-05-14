@@ -8,16 +8,21 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/css/viewCaseStyles.css">
+    <link rel="stylesheet" href="/css/navbarStyles.css">
   </head>
   <body>
 
   <nav class="navbar">
     <div class="container">
         <h2 class="nav-brand">Case ID : <%= caseDetails._id %></h2>
+        <a href="/dashboard"><img class="nav-item" src="/homeIcon.svg" alt="home-button"></a>
     </div>
   </nav>
 
     <div class="container case-body">
+    <%  if(failure){ %>
+        <p class="failure-message"><%= failure %></p>
+    <%  } %>
 
       <h3 class="title">Case Subject/Title</h3>
       <h4 class="content"><%= caseDetails.subjectOrTitle %></h4>
@@ -52,6 +57,11 @@
             <h5 class="title">Time</h5>
             <h6 class="content"><%=caseDetails.time%></h6>
           </div>
+
+          <div class="col-sm">
+              <h5 class="title">Date</h5>
+              <h6 class="content"><%=caseDetails.crimeCommitedOn%></h6>
+          </div>
       </div>
 
       <hr>
@@ -83,7 +93,41 @@
           <span class="wOt-victim-witness-gap"></span>
       <%}})%>
 
+      <hr>
+
+          <div class="row">
+            <div class="col-sm">
+            <a href="/suspectsOfCase/<%= caseDetails._id %>">
+              <div class="card">
+                <div class="card-body view-button">
+                   <h4 class="card-title title">View Suspect(s)</h4>
+                </div>
+              </div>
+            </a>
+            </div>
+              <div class="col-sm">
+              <a href="/criminalsOfCase/<%= caseDetails._id %>">
+                <div class="card">
+                  <div class="card-body view-button">
+                     <h4 class="card-title title">View Criminal(s)</h4>
+                  </div>
+                </div>
+              </a>
+              </div>
+          </div>
+
+      <hr>
+
+      <div class="submit-button">
+        <form method="get">
+                <button class="btn btn-dark" type="submit" name="suspectButton" formaction="/addSuspect/<%= caseDetails._id %>">Add Suspect</button>
+                <span class="button-gap"></span>
+                <button class="btn btn-dark" type="submit" name="criminalButton" formaction="/addCriminal/<%= caseDetails._id %>">Add Criminal</button>
+        </form>
+
       </div>
-    </div>
+
+
+      </div>
  </body>
 </html>

@@ -162,7 +162,6 @@ app.get("/newCase", function(req,res){
 });
 
 app.post("/newCase", function(req,res){
-  console.log("post request triggered");
     if(isLoggedIn){
       let caseId = req.body.caseId;
       let victimsList = req.body.victims.split(",");
@@ -187,7 +186,6 @@ app.post("/newCase", function(req,res){
 
         newCase.save(function(err){
           if(!err){
-            console.log("Inside save");
             if(req.body.radio!==null){
                 if(req.body.radio==="suspect"){
                   res.render("newSuspectForm", {cid:caseId,newCaseMessage: "Case registered successfully!"});
@@ -262,7 +260,6 @@ app.get("/addSuspect/:caseId",function(req,res){
 
 
 app.post("/newSuspectForm", function(req,res){
-  console.log("INSIDE Sus POST REQUEST");
     let typeOfCrimeList = req.body.crime.split(",");
     let vehicleList = req.body.vehicle.split(",");
     let weaponORtoolList = req.body.weaponORtool.split(",");

@@ -12,6 +12,7 @@ app.use(express.static('public'));
 
 let isLoggedIn = true;
 let result=[];
+let retainedSearch;
 // let currentUserId;
 
 mongoose.connect("mongodb://localhost:27017/ciudm", {useNewUrlParser:true, useUnifiedTopology:true});
@@ -210,7 +211,8 @@ app.get("/cases", function(req,res){
         if(!cases||err){
           res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!"});
         }else{
-          res.render("caseList", {cases:cases});
+          retainedSearch=cases;
+          res.render("caseList", {cases:cases, failure:""});
         }
       })
   }
@@ -218,6 +220,68 @@ app.get("/cases", function(req,res){
     res.render("login",{message: "*Please Login"});
   }
 });
+
+app.post("/cases", function(req,res){
+    let typeOfOption = req.body.searchOption;
+      if(typeOfOption==="caseId"){
+        Case.findOne({_id:req.body.searchValue},function(err,cases){
+          if(!cases||err){
+            res.render("caseList", {cases:retainedSearch,failure:"No record found for ID "+req.body.searchValue});
+          }else{
+            res.render("caseList", {cases:cases, failure:""});
+          }
+        })
+      } else if(typeOfOption==="caseTitle"){
+        Case.findOne({subjectOrTitle:req.body.searchValue},function(err,cases){
+          if(!cases||err){
+            res.render("caseList", {cases:retainedSearch,failure:"No record found for tittle "+req.body.searchValue});
+          }else{
+            res.render("caseList", {cases:cases, failure:""});
+          }
+        })
+      }
+      else if(!typeOfOption){
+        res.redirect("/dashboard");
+      }
+});
+
+app.post("/criminals", function(req,res){
+  let firstName = req.body.fname, middleName = req.body.mname, lastName = req.body.lname;
+  if(middleName===""&&lastName!==""){
+      Criminal.find({"name.fname":firstName,"name.lname":lastName},function(err,criminals){
+          if(!criminals||err){
+                res.render("profileList", {pageHeading:"Criminals",profiles:criminals, failure:"No record found for "+firstName+" "+middleName+" "+lastName});
+          }else{
+            console.log(criminals);
+              res.render("profileList", {pageHeading:"Found Criminals for the match",profiles:criminals, failure:""});
+        }
+  })} else if(middleName===""&&lastName===""){
+    Criminal.find({"name.fname":firstName},function(err,criminals){
+        if(criminals.length===0||err){
+              res.render("profileList", {pageHeading:"Criminals",profiles:criminals, failure:"No record found for "+firstName+" "+middleName+" "+lastName});
+        }else{
+          console.log(criminals);
+            res.render("profileList", {pageHeading:"Found Criminals for the match",profiles:criminals, failure:""});
+      }
+      })
+    }
+});
+
+app.get("/criminals", function(req,res){
+  if(isLoggedIn){
+      Criminal.find(function(err,criminals){
+        if(!criminals||err){
+          res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!"});
+        }else{
+          res.render("profileList", {pageHeading:"Criminals",profiles:criminals,failure:""});
+        }
+      })
+  }
+  else{
+    res.render("login",{message: "*Please Login"});
+  }
+});
+
 
 app.get("/findcase/:caseId", function(req,res){
     Case.findOne({_id:req.params.caseId}, function(err,foundCase){
@@ -238,6 +302,8 @@ app.get("/Criminals/:criminalId", function(req,res){
     }
   })
 });
+
+
 
 app.get("/Suspects/:suspectId", function(req,res){
     Suspect.findOne({_id:req.params.suspectId}, function(err,suspect){
@@ -368,20 +434,6 @@ app.post("/newCriminalForm", function(req,res){
     });
 });
 
-app.get("/criminals", function(req,res){
-  if(isLoggedIn){
-      Criminal.find(function(err,criminals){
-        if(!criminals||err){
-          res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!"});
-        }else{
-          res.render("profileList", {pageHeading:"Criminals",profiles:criminals});
-        }
-      })
-  }
-  else{
-    res.render("login",{message: "*Please Login"});
-  }
-});
 
 app.get("/suspects", function(req,res){
   if(isLoggedIn){
@@ -389,7 +441,7 @@ app.get("/suspects", function(req,res){
         if(!suspects||err){
           res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!"});
         }else{
-          res.render("profileList", {pageHeading:"Suspects",profiles:suspects});
+          res.render("profileList", {pageHeading:"Suspects",profiles:suspects,failure:""});
         }
       })
   }
@@ -410,7 +462,7 @@ app.get("/suspectsOfCase/:caseId", function(req,res){
       })
       }
       else{
-          res.render("profileList", {pageHeading:"Suspects",profiles:suspects} );
+          res.render("profileList", {pageHeading:"Suspects",profiles:suspects, failure:""} );
         }
       });
     }else{
@@ -429,7 +481,7 @@ app.get("/criminalsOfCase/:caseId", function(req,res){
       })
   }
       else{
-          res.render("profileList", {pageHeading:"Criminals",profiles:criminals} );
+          res.render("profileList", {pageHeading:"Criminals",profiles:criminals,failure:""} );
         }
       });
     }else{
@@ -466,6 +518,7 @@ app.get("/match/:sentSuspect", function(req,res){
     let totalFields = 0, totalMatches=0;
     let suspectID=req.params.sentSuspect;
     let criminalID;
+    result = [];
     let finalResult=[];
     let str1,str2;
 

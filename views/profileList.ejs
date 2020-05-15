@@ -20,7 +20,20 @@
   </nav>
   <div class="container profile-body">
 
-      <%  if(profiles!==""||profiles!==null){ %>
+    <% if(pageHeading==="Criminals") { %>
+      <div class="container search-area">
+        <h5 class="form-check-label">Find Criminal</h5>
+        <form class="search-button-form form-inline mt-3" action="/Criminals" method="post">
+          <input class="form-control search-bar mx-1" type="text" name="fname" placeholder="First Name">
+          <input class="form-control search-bar mx-1" type="text" name="mname" placeholder="Middle Name">
+          <input class="form-control search-bar mx-1" type="text" name="lname" placeholder="Last Name">
+          <button type="submit" class="btn btn-outline-dark btn-sm" name="searchButton"><img class="button-img" src="/searchButton.svg"></button>
+        </form>
+      </div>
+    <% } %>
+
+      <p class="failure-text"><%= failure %></p>
+      <%  if(profiles.length>0){ %>
       <%    profiles.forEach(function(profile){ %>
             <div class="row">
                 <div class="col-sm">

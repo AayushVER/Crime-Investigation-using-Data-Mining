@@ -71,14 +71,61 @@ a:hover{
   width: auto;
 }
 
-.profile-body{
-  margin-top: 5%;
-}
-
 .thirty{
   width: 30%;
 }
 
 .seventy{
   width: 70%;
+}
+
+.form-check-label{
+  color: #7f8c8d;
+}
+
+button{
+  background-color: #ecf0f1;
+  border-color: #7f8c8d;
+
+}
+ img{
+   height: 25px;
+   width: 50px;
+ }
+
+.search-bar{
+    width: 50%;
+}
+
+.search-area{
+  margin-top: 5%;
+}
+
+.search-button-form{
+    margin-left: 17%;
+}
+
+.show-all-cases-card{
+  text-align: center;
+}
+
+.failure-text{
+  color: red;
+}
+
+.search-area{
+  margin-top: 2%;
+  padding-top: 2%;
+  padding-bottom: 5%;
+  text-align: center;
+  background-color: #ECF0F1;
+  margin-bottom: 5%;
+}
+
+.search-area-cases{
+  margin-top: 2%;
+  padding: 2% 0%;
+  text-align: center;
+  background-color: #ECF0F1;
+  margin-bottom: 5%;
 }

@@ -13,6 +13,9 @@ app.use(express.static('public'));
 let isLoggedIn = false;
 let result=[];
 let retainedSearch;
+let retainedCaseId;
+let retainedCrimes=[];
+let retainedCharges=[];
 // let currentUserId;
 
 mongoose.connect("mongodb://localhost:27017/ciudm", {useNewUrlParser:true, useUnifiedTopology:true});
@@ -67,7 +70,7 @@ const suspectSchema = {
 };
 
 const criminalSchema = {
-  caseId: String,
+  caseId: [],
   name: {
     fname: String,
     mname: String,
@@ -81,7 +84,12 @@ const criminalSchema = {
   nationality: String,
   typeOfCrime: [],
   charges:[],
-  caughtORarrestDate: Date,
+  caughtORarrestDate: [
+    {
+      forCase: String,
+      caughtDate: Date
+    }
+  ],
   weaponORtool: [],
   partners: [],
   details: {
@@ -165,6 +173,7 @@ app.get("/newCase", function(req,res){
 app.post("/newCase", function(req,res){
     if(isLoggedIn){
       let caseId = req.body.caseId;
+      retainedCaseId = caseId;
       let victimsList = req.body.victims.split(",");
       let weaponORtoolList = req.body.weaponORtool.split(",");
       let witnessList = req.body.witness.split(",");
@@ -191,7 +200,7 @@ app.post("/newCase", function(req,res){
                 if(req.body.radio==="suspect"){
                   res.render("newSuspectForm", {cid:caseId,newCaseMessage: "Case registered successfully!"});
                 }else if(req.body.radio==="criminal"){
-                  res.render("newCriminalForm", {cid:caseId,newCaseMessage: "Case registered successfully!"})
+                  res.render("postNewCase", {newCaseMessage: "Case registered successfully!",failure:"",profiles:"",cid:caseId});
                 }else{
                     res.render("dashboard", {dashboardMessage: "Case registered successfully!",failureDashboardMessage:""} );
                 }
@@ -204,6 +213,70 @@ app.post("/newCase", function(req,res){
       res.render("login",{message: "*Please Login"});
     }
 });
+
+app.get("/updateCriminalRecord/:criminalId", function(req,res){
+    res.render("updateCriminalForm", {criminalId: req.params.criminalId, cid: retainedCaseId});
+});
+
+
+app.post("/updateCriminalForm/:criminalId", function(req,res){
+      let thisCaseId = req.body.idCase;
+      let crimeList = req.body.crime.split(",");
+      let chargesList = req.body.charges.split(",");
+      let date = {
+        forCase: thisCaseId,
+        caughtDate: req.body.anotherCaughtDate
+      };
+      let weaponOrToolList = req.body.weaponORtool.split(",");
+      let partnersList = req.body.partnerInCrime.split(",");
+      let vehicleList = req.body.vehicle.split(",");
+
+      Criminal.updateOne(
+            {_id:req.params.criminalId},
+            {$push: {
+              caseId:thisCaseId,
+              typeOfCrime:crimeList,
+              charges:chargesList,
+              caughtORarrestDate: {forCase:thisCaseId,caughtDate:date.caughtDate},
+              weaponORtool:weaponOrToolList,
+              partners:partnersList,
+              vehicle: vehicleList
+            }
+            },function(err){
+              if(err){
+                console.log(err);
+              }else{
+                res.redirect("/dashboard");
+              }
+            }
+          );
+});
+
+app.get("/newCriminalForm/:caseId", function(req,res){
+  res.render("newCriminalForm", {cid:req.params.caseId});
+});
+
+app.post("/postNewCase", function(req,res){
+  let firstName = req.body.fname, middleName = req.body.mname, lastName = req.body.lname;
+  if(middleName===""&&lastName!==""){
+
+      Criminal.find({'name.fname':firstName,'name.lname':lastName},function(err,criminals){
+          if(criminals.length===0){
+              res.render("postNewCase", {profiles:criminals, failure:"No record found for "+firstName+" "+middleName+" "+lastName,newCaseMessage:"",cid:retainedCaseId});
+          }else{
+              res.render("postNewCase", {profiles:criminals, failure:"", newCaseMessage:"",cid:retainedCaseId});
+        }
+  })} else if(middleName===""&&lastName===""){
+    Criminal.find({"name.fname":firstName},function(err,criminals){
+        if(criminals.length===0||err){
+              res.render("postNewCase", {profiles:criminals, failure:"No record found for "+firstName+" "+middleName+" "+lastName,newCaseMessage:"",cid:retainedCaseId});
+        }else{
+            res.render("postNewCase", {profiles:criminals, failure:"", newCaseMessage:"",cid:retainedCaseId});
+      }
+      })
+    }
+});
+
 
 app.get("/cases", function(req,res){
   if(isLoggedIn){
@@ -248,8 +321,7 @@ app.post("/cases", function(req,res){
 app.post("/criminals", function(req,res){
   let firstName = req.body.fname, middleName = req.body.mname, lastName = req.body.lname;
   if(middleName===""&&lastName!==""){
-    let query = "'name.fname':firstName,'name.lname':lastName";
-      Criminal.find(query,function(err,criminals){
+      Criminal.find({'name.fname':firstName,'name.lname':lastName},function(err,criminals){
         console.log("After Search : "+criminals);
           if(!criminals||err){
                 res.render("profileList", {pageHeading:"Criminals",profiles:criminals, failure:"No record found for "+firstName+" "+middleName+" "+lastName});
@@ -395,14 +467,16 @@ app.post("/newSuspectForm", function(req,res){
 
 });
 
+////////////////////////////////////////////////////////////////////////////////
 app.get("/addCriminal/:caseId", function(req,res){
     if(isLoggedIn){
-      let caseId = req.params.caseId;
-      res.render("newCriminalForm", {cid:caseId,newCaseMessage: ""});
+        retainedCaseId = req.params.caseId;
+        res.render("postNewCase", {newCaseMessage: "",failure:"",profiles:"",cid:retainedCaseId});
     }else{
       res.render("login",{message: "*Please Login"});
     }
 });
+////////////////////////////////////////////////////////////////////////////////
 
 app.post("/newCriminalForm", function(req,res){
   let typeOfCrimeList = req.body.crime.split(",");
@@ -424,7 +498,13 @@ app.post("/newCriminalForm", function(req,res){
       },
       nationality: req.body.nationality,
       typeOfCrime: typeOfCrimeList,
-      caughtORarrestDate: req.body.caughtDate,
+      caughtORarrestDate: [
+        {
+          forCase: req.body.idCase,
+          caughtDate: req.body.caughtDate
+        }
+      ],
+      // caughtORarrestDate: req.body.caughtDate,
       weaponORtool: weaponORtoolList,
       charges: chargesList,
       partners: req.body.partnerList,

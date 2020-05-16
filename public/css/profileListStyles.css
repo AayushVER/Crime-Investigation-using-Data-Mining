@@ -130,6 +130,14 @@ button{
   margin-bottom: 5%;
 }
 
-.filter-form{
+.success-text{
+  color: green;
+}
 
+.newCriminalFormButton{
+  color: #7f8c8d;
+}
+
+.newCriminalText{
+  text-align: center;
 }

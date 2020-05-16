@@ -146,108 +146,113 @@
           </div>
         </div>
       </div>
+
+
       <hr>
       <% } %>
 
 
       <% if(pageHeading==="Criminal Record") { %>
+        <h5 class="title">Caught on</h5>
+        <% if(profileDetails.caughtORarrestDate.caughtDate===""||profileDetails.caughtORarrestDate.caughtDate===null) {%>
         <div class="row">
         <div class="col-sm">
-          <h5 class="title">Caught on</h5>
-          <% if(!profileDetails.caughtORarrestDate||profileDetails.caughtORarrestDate==="") {%>
             <h6 class="content">*Criminal not caught yet</h6>
-            <%} else {%>
+            <%} else { profileDetails.caughtORarrestDate.forEach(function(caughtDetail){%>
               <div class="victin-witness-box">
-              <h6 class="content"><%= profileDetails.caughtORarrestDate %></h6>
+              <h6 class="content"><%= caughtDetail.forCase %></h6>
+              <h6 class="content"><%= caughtDetail.caughtDate %></h6>
               <span class="wOt-victim-witness-gap"></span>
-          <%}%>
-          </div>
+              </div>
+          <%})}%>
         </div>
       </div>
       <hr>
       <% } %>
 
-      <h3 class="title">Body Details</h3>
-      <div class="row">
-          <div class="col-sm">
-              <h5 class="title">Skin Tone</h5>
-              <%if (profileDetails.details.skinTone===""||profileDetails.details.skinTone===null) {%>
+      <div class="container">
+        <h3 class="title">Body Details</h3>
+        <div class="row">
+            <div class="col-sm">
+                <h5 class="title">Skin Tone</h5>
+                <%if (profileDetails.details.skinTone===""||profileDetails.details.skinTone===null) {%>
+                   <h6 class="content">*N/A</h6>
+               <%} else {%>
+                <% let skinToneValue = profileDetails.details.skinTone.substring(0,1).toLocaleUpperCase() + profileDetails.details.skinTone.substring(1); %>
+                <h6 class="content"><%=skinToneValue%></h6>
+                <%}%>
+            </div>
+            <div class="col-sm">
+              <h5 class="title">Eye Color</h5>
+              <%if (profileDetails.details.eyeColor===""||profileDetails.details.eyeColor===null) {%>
                  <h6 class="content">*N/A</h6>
              <%} else {%>
-              <% let skinToneValue = profileDetails.details.skinTone.substring(0,1).toLocaleUpperCase() + profileDetails.details.skinTone.substring(1); %>
-              <h6 class="content"><%=skinToneValue%></h6>
+              <h6 class="content"><%=profileDetails.details.eyeColor%></h6>
               <%}%>
-          </div>
-          <div class="col-sm">
-            <h5 class="title">Eye Color</h5>
-            <%if (profileDetails.details.eyeColor===""||profileDetails.details.eyeColor===null) {%>
-               <h6 class="content">*N/A</h6>
-           <%} else {%>
-            <h6 class="content"><%=profileDetails.details.eyeColor%></h6>
-            <%}%>
-          </div>
-          <div class="col-sm">
-            <h5 class="title">Height</h5>
-            <%if (profileDetails.details.height===""||profileDetails.details.height===null) {%>
-               <h6 class="content">*N/A</h6>
-           <%} else {%>
-            <h6 class="content"><%=profileDetails.details.height.ft%>'<%=profileDetails.details.height.in%></h6>
-            <%}%>
-          </div>
-          <div class="col-sm">
-            <h5 class="title">Handed</h5>
-            <%if (profileDetails.details.handed===""||profileDetails.details.handed===null) {%>
-               <h6 class="content">*N/A</h6>
-           <%} else {%>
-             <% let handedValue = profileDetails.details.handed.substring(0,1).toLocaleUpperCase() + profileDetails.details.handed.substring(1); %>
-            <h6 class="content"><%=handedValue%></h6>
-            <%}%>
-          </div>
-          <div class="col-sm">
-            <h5 class="title">Body Fit</h5>
-            <%if (profileDetails.details.bodyFit===""||profileDetails.details.bodyFit===null) {%>
-               <h6 class="content">*N/A</h6>
-           <%} else {%>
-             <% let bodyFitValue = profileDetails.details.bodyFit.substring(0,1).toLocaleUpperCase() + profileDetails.details.bodyFit.substring(1); %>
-            <h6 class="content"><%=bodyFitValue%></h6>
-            <%}%>
-          </div>
-      </div>
-
-      <hr>
-
-      <h3 class="title">Body Mark</h3>
-      <div class="row">
-          <div class="col-sm">
-              <%if (profileDetails.bodyMark.bodyPart===""&&profileDetails.bodyMark.mark==="") {%>
-                 <h6 class="content">*Information not available</h6>
+            </div>
+            <div class="col-sm">
+              <h5 class="title">Height</h5>
+              <%if (profileDetails.details.height===""||profileDetails.details.height===null) {%>
+                 <h6 class="content">*N/A</h6>
              <%} else {%>
-              <h6 class="content"><%=profileDetails.bodyMark.bodyPart%>-<%= profileDetails.bodyMark.mark%></h6>
+              <h6 class="content"><%=profileDetails.details.height.ft%>'<%=profileDetails.details.height.in%></h6>
               <%}%>
-          </div>
-      </div>
-
-      <hr>
-
-      <h3 class="title">Vehicle(s)</h3>
-      <div class="row">
-          <div class="col-sm">
-              <%if (profileDetails.vehicle===""||profileDetails.vehicle===null) {%>
-                 <h6 class="content">*Information not available</h6>
+            </div>
+            <div class="col-sm">
+              <h5 class="title">Handed</h5>
+              <%if (profileDetails.details.handed===""||profileDetails.details.handed===null) {%>
+                 <h6 class="content">*N/A</h6>
              <%} else {%>
-              <h6 class="content"><%=profileDetails.vehicle%></h6>
+               <% let handedValue = profileDetails.details.handed.substring(0,1).toLocaleUpperCase() + profileDetails.details.handed.substring(1); %>
+              <h6 class="content"><%=handedValue%></h6>
               <%}%>
-          </div>
-      </div>
+            </div>
+            <div class="col-sm">
+              <h5 class="title">Body Fit</h5>
+              <%if (profileDetails.details.bodyFit===""||profileDetails.details.bodyFit===null) {%>
+                 <h6 class="content">*N/A</h6>
+             <%} else {%>
+               <% let bodyFitValue = profileDetails.details.bodyFit.substring(0,1).toLocaleUpperCase() + profileDetails.details.bodyFit.substring(1); %>
+              <h6 class="content"><%=bodyFitValue%></h6>
+              <%}%>
+            </div>
+        </div>
 
-      <hr>
-    <%  if(pageHeading==="Suspect Record"){ %>
-      <div class="matchButton">
-        <form action="/match/<%= profileDetails._id %>" method="get">
-              <button class="btn btn-dark" type="submit" name="matchWithCriminals">Find Match</button>
-        </form>
+        <hr>
+
+        <h3 class="title">Body Mark</h3>
+        <div class="row">
+            <div class="col-sm">
+                <%if (profileDetails.bodyMark.bodyPart===""&&profileDetails.bodyMark.mark==="") {%>
+                   <h6 class="content">*Information not available</h6>
+               <%} else {%>
+                <h6 class="content"><%=profileDetails.bodyMark.bodyPart%>-<%= profileDetails.bodyMark.mark%></h6>
+                <%}%>
+            </div>
+        </div>
+
+        <hr>
+
+        <h3 class="title">Vehicle(s)</h3>
+        <div class="row">
+            <div class="col-sm">
+                <%if (profileDetails.vehicle===""||profileDetails.vehicle===null) {%>
+                   <h6 class="content">*Information not available</h6>
+               <%} else {%>
+                <h6 class="content"><%=profileDetails.vehicle%></h6>
+                <%}%>
+            </div>
+        </div>
+
+        <hr>
+      <%  if(pageHeading==="Suspect Record"){ %>
+        <div class="matchButton">
+          <form action="/match/<%= profileDetails._id %>" method="get">
+                <button class="btn btn-dark" type="submit" name="matchWithCriminals">Find Match</button>
+          </form>
+        </div>
+      <%   } %>
       </div>
-    <%   } %>
 
     </div>
   </body>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/newCriminal.css">
+    <link rel="stylesheet" href="/css/navbarStyles.css">
+  </head>
+  <body>
+
+  <nav class="navbar">
+    <div class="container">
+        <h2 class="nav-brand">Update Criminal Record</h2>
+        <a href="/dashboard"><img class="nav-item" src="/homeIcon.svg" alt="home-button"></a>
+    </div>
+  </nav>
+  <div class="container form-container">
+    <form class="criminnalForm" action="/updateCriminalForm/<%= criminalId %>" method="post">
+      <div class="form-group">
+        <h5>Case ID</h5>
+        <div class="row">
+          <div class="col-sm-3">
+              <input class="form-control" type="text" name="idCase" value="<%=cid%>">
+          </div>
+        </div>
+
+        <hr>
+
+        <h5>Crime Detail</h5>
+        <div class="row">
+            <div class="col-sm-6">
+                <input class="form-control" type="text" name="crime" placeholder="Crime" describedby="example">
+            </div>
+            <div class="col-sm-6 example">
+              <div class="input-group-append">
+                  <span class="input-group-text" id="example">e.g., Robbery,Murder,Kidnapping,Chain Snatching,Street Fight</span>
+              </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <input class="form-control crime-inputs" type="text" name="charges" placeholder="Charges">
+            </div>
+        </div>
+        <div class="row crime-inputs">
+          <div class="col-sm-4">
+            <label>Caught/Arrested on</label>
+            <input class="form-control dateInput" type="date" name="anotherCaughtDate">
+          </div>
+      </div>
+      <div class="row crime-inputs">
+          <div class="col-sm-4">
+              <input class="form-control" type="text" name="weaponORtool" placeholder="Weapon/Tool Used">
+          </div>
+          <div class="col-sm-4">
+              <input class="form-control" type="text" name="partnerInCrime" placeholder="Caught/Uncaught Partner">
+          </div>
+      </div>
+
+        <hr>
+
+        <h5>Vehicle</h5>
+
+        <div class="row">
+            <div class="col-sm">
+                <input class="form-control crime-input" type="text" name="vehicle" placeholder="Vehicle (Company_Model_Color),(Company_Model_Color)...">
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="submitButton">
+            <button type="submit" class="btn btn-dark submitButton" name="button">Submit</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</body>
+</html>

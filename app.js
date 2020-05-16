@@ -10,7 +10,7 @@ app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 
-let isLoggedIn = true;
+let isLoggedIn = false;
 let result=[];
 let retainedSearch;
 // let currentUserId;

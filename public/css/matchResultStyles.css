@@ -4,6 +4,11 @@
   color: #7f8c8d;
 }
 
+.nav-item{
+  height: 30px;
+}
+
+
 hr{
   color: #ecf0f1;
 }
@@ -24,16 +29,22 @@ td{
 .row{
   margin-top: 10px;
 }
+
+
 .card-body{
     background-color: #f5f6fa;
 }
 
 .card-body:hover{
-    background-color: #f5f6fa;
+  background-color: #2f3640;
 }
 
 .card{
   border: none;
+}
+
+.card:hover{
+background-color: #2f3640;
 }
 
 a{
@@ -42,7 +53,7 @@ a{
 
 a:hover{
   text-decoration: none;
-  color: #7F8C8D;
+  color: white;
 }
 
 .name-color-match{

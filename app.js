@@ -248,12 +248,14 @@ app.post("/cases", function(req,res){
 app.post("/criminals", function(req,res){
   let firstName = req.body.fname, middleName = req.body.mname, lastName = req.body.lname;
   if(middleName===""&&lastName!==""){
-      Criminal.find({"name.fname":firstName,"name.lname":lastName},function(err,criminals){
+    let query = "'name.fname':firstName,'name.lname':lastName";
+      Criminal.find(query,function(err,criminals){
+        console.log("After Search : "+criminals);
           if(!criminals||err){
                 res.render("profileList", {pageHeading:"Criminals",profiles:criminals, failure:"No record found for "+firstName+" "+middleName+" "+lastName});
           }else{
             console.log(criminals);
-              res.render("profileList", {pageHeading:"Found Criminals for the match",profiles:criminals, failure:""});
+              res.render("profileList", {pageHeading:"Criminals",profiles:criminals, failure:""});
         }
   })} else if(middleName===""&&lastName===""){
     Criminal.find({"name.fname":firstName},function(err,criminals){
@@ -261,18 +263,37 @@ app.post("/criminals", function(req,res){
               res.render("profileList", {pageHeading:"Criminals",profiles:criminals, failure:"No record found for "+firstName+" "+middleName+" "+lastName});
         }else{
           console.log(criminals);
-            res.render("profileList", {pageHeading:"Found Criminals for the match",profiles:criminals, failure:""});
+            res.render("profileList", {pageHeading:"Criminals",profiles:criminals, failure:""});
       }
       })
     }
 });
 
+app.post("/findCaseByFilter", function(req,res){
+    let key = req.body.searchOption;
+    if(!key){
+        res.render("profileList", {pageHeading:"Criminals",profiles:retainedSearch, failure:"Please select an option first"});
+    }else{
+      let value = req.body.searchValue;
+      console.log(key +" "+value);
+      Criminal.find({[key]:value},function(err,criminals){
+      if(criminals.length===0||err){
+            res.render("profileList", {pageHeading:"Criminals",profiles:criminals, failure:"No record found for "+value});
+          }else{
+          res.render("profileList", {pageHeading:"Criminals",profiles:criminals, failure:""});
+    }
+    });
+    }
+});
+
 app.get("/criminals", function(req,res){
+  retainedSearch=[];
   if(isLoggedIn){
       Criminal.find(function(err,criminals){
         if(!criminals||err){
           res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!"});
         }else{
+          retainedSearch=criminals;
           res.render("profileList", {pageHeading:"Criminals",profiles:criminals,failure:""});
         }
       })
@@ -774,9 +795,9 @@ app.get("/match/:sentSuspect", function(req,res){
             })
             function sort_result(a, b){
               if(a.matchScore < b.matchScore){
-                      return 1;
-              }else if(a.matchScore > b.matchScore){
                       return -1;
+              }else if(a.matchScore > b.matchScore){
+                      return 1;
               }else{
                       return 0;
               }
@@ -784,8 +805,6 @@ app.get("/match/:sentSuspect", function(req,res){
 
             finalResult = result.sort(sort_result);
             res.render("matchResult", {matchResultArray:finalResult});
-
-            //Criminal Loop Ends Here
         } else{
           res.render("profileView", {profileDetails: suspect,pageHeading:"Suspect Record",failure:"No Criminal record to match with"});
         }

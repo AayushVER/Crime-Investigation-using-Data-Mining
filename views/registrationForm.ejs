@@ -16,6 +16,9 @@
         <form action="/addUser" method="post">
           <h3>User Registration</h3>
           <div class="form-group">
+            <% if(message){ %>
+            <p class="invalid-credential"><%= message%></p>
+            <%  } %>
             <div class="fname-lname-field">
               <input type="text" class="form-control" name="fname" placeholder="First Name" required autocomplete="off">
               <span style="width:4px;"></span>

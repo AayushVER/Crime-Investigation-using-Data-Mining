@@ -10,7 +10,7 @@ app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 
-let isLoggedIn = false;
+let isLoggedIn = true;
 let result=[];
 let retainedSearch;
 let retainedCaseId;
@@ -110,9 +110,9 @@ const criminalSchema = {
 };
 
 const userSchema = {
+  _id : String,
   fname: String,
   lname: String,
-  username : String,
   password: String,
   type: String,
   documentType: String,
@@ -120,18 +120,15 @@ const userSchema = {
 };
 
 const rejectedSchema = {
-  username: String,
+  _id: String,
   comment: String
-}
+};
 
 const Case = mongoose.model("case", caseSchema);
 const Suspect = mongoose.model("suspect", suspectSchema);
 const Criminal = mongoose.model("criminal", criminalSchema);
 const User = mongoose.model("user", userSchema);
 const JoinRequest = mongoose.model("joinRequest",userSchema);
-const Admin = mongoose.model("admin",userSchema);
-const Police = mongoose.model("police",userSchema);
-const Public = mongoose.model("public",userSchema);
 const RejectList = mongoose.model("reject",rejectedSchema);
 
 
@@ -149,22 +146,28 @@ app.get("/newUser",function(req,res){
 
 app.post("/addUser",function(req,res){
   let password = md5(req.body.password)
-  const newUserRequest = new JoinRequest({
-    fname: req.body.fname,
-    lname: req.body.lname,
-    username : req.body.email,
-    documentType: req.body.documentType,
-    documentId: req.body.documentId,
-    password: password,
-    type: req.body.searchOption
-  });
-    newUserRequest.save(function(err){
-      if(!err){
-        res.render("home", {successMessage:"Request submitted Succesfully. Once your request is approved, you will be able to Login with registered credentials."})
-      }else{
-        res.send(err);
+  User.findOne({_id:req.body.email}, function(err,user){
+      if(user===null){
+        const newUserRequest = new JoinRequest({
+          _id : req.body.email,
+          fname: req.body.fname,
+          lname: req.body.lname,
+          documentType: req.body.documentType,
+          documentId: req.body.documentId,
+          password: password,
+          type: req.body.searchOption
+        });
+          newUserRequest.save(function(err){
+            if(!err){
+              res.render("home", {successMessage:"Request submitted Succesfully. Once your request is approved, you will be able to Login with registered credentials."})
+            }else{
+              res.send(err);
+            }
+          });
+      } else {
+        res.render("registrationForm",{message:"Email ID already exists"});
       }
-    });
+  });
 });
 
 app.post("/acceptRequest/:userId", function(req,res){
@@ -174,64 +177,28 @@ app.post("/acceptRequest/:userId", function(req,res){
         JoinRequest.deleteOne({_id:userId}, function(err){
           if(err){
             console.log(err);
-          }
-        });
-        if(user.type==="Admin"){
-              const newUser = new Admin({
+              }
+              });
+
+            const newUser = new User({
                 _id:userId,
                 fname: user.fname,
                 lname: user.lname,
-                username : user.username,
                 documentType: user.documentType,
                 documentId: user.documentId,
                 password: user.password,
                 type: user.searchOption
               });
-              newUser.save(function(err){
-                  if(!err){
-                    JoinRequest.deleteOne({})
-                    res.redirect("/pendingUsers");
-                  }
-          });
-      }
-          else if(user.type==="Police"){
-            const newUser = new Police({
-          _id:userId,
-          fname: user.fname,
-          lname: user.lname,
-          username : user.username,
-          documentType: user.documentType,
-          documentId: user.documentId,
-          password: user.password,
-          type: user.searchOption
-          });
+
         newUser.save(function(err){
-            if(!err){
-              JoinRequest.deleteOne({})
-              res.redirect("/pendingUsers");
-            }
-          });
-  }
-    else if(user.type==="Public"){
-    const newUser = new Public({
-      _id:userId,
-      fname: user.fname,
-      lname: user.lname,
-      username : user.username,
-      documentType: user.documentType,
-      documentId: user.documentId,
-      password: user.password,
-      type: user.searchOption
-    });
-    newUser.save(function(err){
         if(!err){
           JoinRequest.deleteOne({})
           res.redirect("/pendingUsers");
         }
       });
+      });
     }
-  })
-}else{
+  else{
     res.render("login", {message: "*Please Login"});
   }
 });
@@ -241,10 +208,21 @@ app.post("/rejectRequest/:userId",function(req,res){
       let userId = req.params.userId;
         JoinRequest.findOne({_id:userId}, function(err,user){
 
+          const newReject = new RejectList({
+              _id:user._id,
+              comment:req.body.reasonOfRejection
+          });
+
+          newReject.save(function(err){
+              if(err){
+                console.log(err);
+              }
+          });
+
           JoinRequest.deleteOne({_id:userId}, function(err){
             if(err){
               console.log(err);
-            }
+            }else{res.redirect("/pendingUsers");}
           })
         })
       }
@@ -254,18 +232,25 @@ app.post("/login",function(req,res){
     let username = req.body.email;
     let password = md5(req.body.password);
 
-    User.findOne({username: username}, function(err, user){
-      if(user!==null){
-        if(user.username===username&&user.password===password){
-          isLoggedIn = true;
-          currentUserId = user._id;
-          res.render("dashboard", {dashboardMessage: "", failureDashboardMessage:""});
-        }else{
-          res.render("login", {message: "*Invalid Credentials. Please try again."});
-        }
-      }else{
-        res.render("login", {message: "*Invalid Credentials. Please try again."});
-      }
+    RejectList.findOne({_id:username}, function(err,rejected){
+          if(rejected===null){
+            
+            User.findOne({_id: username}, function(err, user){
+                    if(user!==null){
+                      if(user._id===username&&user.password===password){
+                        isLoggedIn = true;
+                        currentUserId = user._id;
+                        res.render("dashboard", {dashboardMessage: "", failureDashboardMessage:""});
+                      }else{
+                        res.render("login", {message: "*Invalid Credentials. Please try again."});
+                      }
+                    }else{
+                      res.render("login", {message: "*Invalid Credentials. Please try again."});
+                    }
+                  });
+          }else{
+            res.render("login", {message: "Sorry, your request for account is rejected with comment(s) - "+rejected.comment});
+          }
     });
 
 });
@@ -458,11 +443,11 @@ app.post("/criminals", function(req,res){
   let firstName = req.body.fname, middleName = req.body.mname, lastName = req.body.lname;
   if(middleName===""&&lastName!==""){
       Criminal.find({'name.fname':firstName,'name.lname':lastName},function(err,criminals){
-        console.log("After Search : "+criminals);
+
           if(!criminals||err){
                 res.render("profileList", {pageHeading:"Criminals",profiles:criminals, failure:"No record found for "+firstName+" "+middleName+" "+lastName});
           }else{
-            console.log(criminals);
+
               res.render("profileList", {pageHeading:"Criminals",profiles:criminals, failure:""});
         }
   })} else if(middleName===""&&lastName===""){
@@ -470,7 +455,7 @@ app.post("/criminals", function(req,res){
         if(criminals.length===0||err){
               res.render("profileList", {pageHeading:"Criminals",profiles:criminals, failure:"No record found for "+firstName+" "+middleName+" "+lastName});
         }else{
-          console.log(criminals);
+
             res.render("profileList", {pageHeading:"Criminals",profiles:criminals, failure:""});
       }
       })
@@ -483,7 +468,7 @@ app.post("/findCaseByFilter", function(req,res){
         res.render("profileList", {pageHeading:"Criminals",profiles:retainedSearch, failure:"Please select an option first"});
     }else{
       let value = req.body.searchValue;
-      console.log(key +" "+value);
+
       Criminal.find({[key]:value},function(err,criminals){
       if(criminals.length===0||err){
             res.render("profileList", {pageHeading:"Criminals",profiles:criminals, failure:"No record found for "+value});
@@ -734,21 +719,21 @@ app.get("/operation", function(req, res){
   }
 });
 
-app.post("/register",function(req,res){
-  let email = req.body.email;
-  let password = md5(req.body.password);
-  const newUser = new User({
-    username: email,
-    password: password
-  });
-  newUser.save(function(err){
-    if(!err){
-      res.send("User Addeded Succesfully");
-    }else{
-      res.send(err);
-    }
-  });
-});
+// app.post("/register",function(req,res){
+//   let email = req.body.email;
+//   let password = md5(req.body.password);
+//   const newUser = new User({
+//     _id: email,
+//     password: password
+//   });
+//   newUser.save(function(err){
+//     if(!err){
+//       res.send("User Addeded Succesfully");
+//     }else{
+//       res.send(err);
+//     }
+//   });
+// });
 
 app.get("/match/:sentSuspect", function(req,res){
   if(isLoggedIn){

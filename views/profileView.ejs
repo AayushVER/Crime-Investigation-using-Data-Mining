@@ -147,14 +147,12 @@
         </div>
       </div>
 
-
       <hr>
       <% } %>
 
-
       <% if(pageHeading==="Criminal Record") { %>
         <h5 class="title">Caught on</h5>
-        <% if(profileDetails.caughtORarrestDate.caughtDate===""||profileDetails.caughtORarrestDate.caughtDate===null) {%>
+        <% if(!profileDetails.caughtORarrestDate.caughtDate){%>
         <div class="row">
         <div class="col-sm">
             <h6 class="content">*Criminal not caught yet</h6>

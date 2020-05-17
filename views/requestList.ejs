@@ -34,7 +34,7 @@
                                 <th class="card-title thirty" rowspan="3"><h2><%= request.fname%><span class="lname"></span><%= request.lname %></h2></th>
                                 <td class="inline-data">
                                   <span class="span-width"></span>
-                                      <p>Username : <%= request.username %></p>
+                                      <p>Username : <%= request._id %></p>
                                 </td>
                               </tr>
                               <tr>
@@ -52,8 +52,31 @@
                                 </td>
                                 <td style="position:relative;left:70%;">
                                   <form method="post">
-                                    <button class="btn btn-success" formaction="/acceptRequest/<%= request._id%>">Approve <img src="/tick.png" class="icon"></img></button>
-                                    <button class="btn btn-danger ml-2" formaction="/rejectRequest/<%= request._id%>">Reject <img src="/cross.png" class="icon"></img></button>
+                                    <button type="submit" class="btn btn-success" formaction="/acceptRequest/<%= request._id%>">Approve <img src="/tick.png" class="icon"></img></button>
+                                  </form>
+
+                                    <!-- <button class="btn btn-danger ml-2" formaction="/rejectRequest/<%= request._id%>">Reject <img src="/cross.png" class="icon"></img></button> -->
+                                    <form method="post">
+                                    <button type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#rejectModal">Reject</button>
+                                      <!-- Modal -->
+                                        <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                          <div class="modal-dialog">
+                                            <div class="modal-content">
+                                              <div class="modal-header">
+                                                <h5 class="modal-title" style="color:#7f8c8d;" id="exampleModalLabel">Rejecting request of <%= request.fname %> <%= request.lname %></h5>
+                                              </div>
+                                                <div class="modal-body">
+                                                  <div class="form-group">
+                                                        <textarea class="form-control" name="reasonOfRejection" placeholder="Reason of Rejection" rows="3" required></textarea>
+                                                  </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                  <button type="submit" class="btn btn-danger" formaction="/rejectRequest/<%= request._id%>">Reject</button>
+                                                </div>
+                                            </div>
+                                          </div>
+                                        </div>
                                   </form>
                                 </td>
                               </tr>

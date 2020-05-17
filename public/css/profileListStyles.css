@@ -27,10 +27,12 @@ td{
 }
 .card-body{
     background-color: #f5f6fa;
+    color: #7f8c8d;
 }
 
 .card-body:hover{
     background-color: #2f3640;
+    color: white;
 }
 
 .card:hover{
@@ -140,4 +142,9 @@ button{
 
 .newCriminalText{
   text-align: center;
+}
+
+.icon{
+  height: 1rem;
+  width: 1rem;
 }

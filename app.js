@@ -110,22 +110,144 @@ const criminalSchema = {
 };
 
 const userSchema = {
+  fname: String,
+  lname: String,
   username : String,
-  password: String
+  password: String,
+  type: String,
+  documentType: String,
+  documentId: String
 };
+
+const rejectedSchema = {
+  username: String,
+  comment: String
+}
 
 const Case = mongoose.model("case", caseSchema);
 const Suspect = mongoose.model("suspect", suspectSchema);
 const Criminal = mongoose.model("criminal", criminalSchema);
 const User = mongoose.model("user", userSchema);
+const JoinRequest = mongoose.model("joinRequest",userSchema);
+const Admin = mongoose.model("admin",userSchema);
+const Police = mongoose.model("police",userSchema);
+const Public = mongoose.model("public",userSchema);
+const RejectList = mongoose.model("reject",rejectedSchema);
 
 
 app.get("/",function(req,res){
-    res.render("login", {message: ""});
+    res.render("home", {successMessage: ""});
 });
 
 app.get("/login",function(req,res){
     res.render("login", {message: ""});
+});
+
+app.get("/newUser",function(req,res){
+    res.render("registrationForm", {message: ""});
+});
+
+app.post("/addUser",function(req,res){
+  let password = md5(req.body.password)
+  const newUserRequest = new JoinRequest({
+    fname: req.body.fname,
+    lname: req.body.lname,
+    username : req.body.email,
+    documentType: req.body.documentType,
+    documentId: req.body.documentId,
+    password: password,
+    type: req.body.searchOption
+  });
+    newUserRequest.save(function(err){
+      if(!err){
+        res.render("home", {successMessage:"Request submitted Succesfully. Once your request is approved, you will be able to Login with registered credentials."})
+      }else{
+        res.send(err);
+      }
+    });
+});
+
+app.post("/acceptRequest/:userId", function(req,res){
+  if(isLoggedIn){
+    let userId = req.params.userId;
+      JoinRequest.findOne({_id:userId}, function(err,user){
+        JoinRequest.deleteOne({_id:userId}, function(err){
+          if(err){
+            console.log(err);
+          }
+        });
+        if(user.type==="Admin"){
+              const newUser = new Admin({
+                _id:userId,
+                fname: user.fname,
+                lname: user.lname,
+                username : user.username,
+                documentType: user.documentType,
+                documentId: user.documentId,
+                password: user.password,
+                type: user.searchOption
+              });
+              newUser.save(function(err){
+                  if(!err){
+                    JoinRequest.deleteOne({})
+                    res.redirect("/pendingUsers");
+                  }
+          });
+      }
+          else if(user.type==="Police"){
+            const newUser = new Police({
+          _id:userId,
+          fname: user.fname,
+          lname: user.lname,
+          username : user.username,
+          documentType: user.documentType,
+          documentId: user.documentId,
+          password: user.password,
+          type: user.searchOption
+          });
+        newUser.save(function(err){
+            if(!err){
+              JoinRequest.deleteOne({})
+              res.redirect("/pendingUsers");
+            }
+          });
+  }
+    else if(user.type==="Public"){
+    const newUser = new Public({
+      _id:userId,
+      fname: user.fname,
+      lname: user.lname,
+      username : user.username,
+      documentType: user.documentType,
+      documentId: user.documentId,
+      password: user.password,
+      type: user.searchOption
+    });
+    newUser.save(function(err){
+        if(!err){
+          JoinRequest.deleteOne({})
+          res.redirect("/pendingUsers");
+        }
+      });
+    }
+  })
+}else{
+    res.render("login", {message: "*Please Login"});
+  }
+});
+
+app.post("/rejectRequest/:userId",function(req,res){
+    if(isLoggedIn){
+      let userId = req.params.userId;
+        JoinRequest.findOne({_id:userId}, function(err,user){
+
+          JoinRequest.deleteOne({_id:userId}, function(err){
+            if(err){
+              console.log(err);
+            }
+          })
+        })
+      }
 });
 
 app.post("/login",function(req,res){
@@ -159,6 +281,20 @@ app.get("/dashboard",function(req,res){
 app.post("/dashboard",function(req,res){
     isLoggedIn=false;
     res.redirect("/")
+});
+
+app.get("/pendingUsers",function(req,res){
+    if(isLoggedIn){
+      JoinRequest.find(function(err, allRequests){
+        if(allRequests.length===0){
+          res.render("requestList",{requests:"",failure:"No pending request"});
+        }else{
+        res.render("requestList",{requests:allRequests,failure:""});
+      }
+      })
+    } else{
+      res.render("login",{message: "*Please Login"});
+    }
 });
 
 app.get("/newCase", function(req,res){
@@ -875,9 +1011,9 @@ app.get("/match/:sentSuspect", function(req,res){
             })
             function sort_result(a, b){
               if(a.matchScore < b.matchScore){
-                      return -1;
-              }else if(a.matchScore > b.matchScore){
                       return 1;
+              }else if(a.matchScore > b.matchScore){
+                      return -1;
               }else{
                       return 0;
               }

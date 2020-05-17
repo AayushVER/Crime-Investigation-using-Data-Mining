@@ -1,0 +1,25 @@
+body{
+  /* text-align: center; */
+  background-color: #F5F5F5;
+}
+
+.home-body{
+  text-align: center;
+  margin-top: 15%;
+}
+
+.successMessage{
+  color: green;
+}
+
+.dark-text{
+  color: #7f8c8d;
+}
+
+.buttons{
+  display: inline;
+}
+
+.heading{
+  margin-bottom: 2%;
+}

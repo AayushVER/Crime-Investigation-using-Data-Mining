@@ -14,3 +14,21 @@ body{
 .invalid-credential{
     color: red;
 }
+
+.fname-lname-field{
+  display: flex;
+}
+
+.login-div{
+  margin-top: 3%;
+  text-align: center;
+}
+
+.login-message{
+  font-size: 0.8rem;
+}
+
+.signup-button{
+  margin-top: 10%;
+  text-align: center;
+}

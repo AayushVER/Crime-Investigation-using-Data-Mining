@@ -14,7 +14,7 @@
 
   <nav class="navbar">
     <div class="container">
-        <h2 class="nav-brand">Case ID : <%= caseDetails._id %></h2>
+        <h2 class="nav-brand">Request ID : <%= caseDetails._id %></h2>
         <a href="/dashboard"><img class="nav-item" src="/homeIcon.svg" alt="home-button"></a>
     </div>
   </nav>
@@ -24,31 +24,20 @@
         <p class="failure-message"><%= failure %></p>
     <%  } %>
 
-      <h3 class="title">Case Subject/Title</h3>
-      <h4 class="content"><%= caseDetails.subjectOrTitle %></h4>
+      <h5 class="title">Case Status : <%= caseDetails.status %></h5>
+      <% if(caseDetails.rejectedComment){ %>
+      <h5 style="color:red;">Rejection comment : <%= caseDetails.rejectedComment %></h5>
+      <% } %>
 
       <hr>
+
+      <h3 class="title">Case Subject/Title</h3>
+      <h4 class="content"><%= caseDetails.subjectOrTitle %></h4>
 
       <br>
 
       <h3 class="title">Case Description</h3>
       <p class="content"><%=caseDetails.description%></p>
-
-      <hr>
-
-      <div class="row">
-        <div class="col-sm">
-          <h4 class="title">Case Approved by </h4>
-          <h5 class="content"><%= caseDetails.user %></h5>
-        </div>
-
-        <%  if(caseDetails.submittedBy!==""||caseDetails.submittedBy!==null){ %>
-        <div class="col-sm">
-          <h4 class="title">Case Uploaded by</h4>
-          <h5 class="content"><%= caseDetails.submittedBy %></h5>
-        </div>
-        <%  } %>
-      </div>
 
       <hr>
 
@@ -111,43 +100,59 @@
           <span class="wOt-victim-witness-gap"></span>
       <%}})%>
 
-          <hr>
+      <%if(userType==="Admin"){ %>
 
-          <div class="row">
-            <div class="col-sm">
-            <a href="/suspectsOfCase/<%= caseDetails._id %>">
-              <div class="card">
-                <div class="card-body view-button">
-                   <h4 class="card-title title">View Suspect(s)</h4>
-                </div>
-              </div>
-            </a>
-            </div>
-              <div class="col-sm">
-              <a href="/criminalsOfCase/<%= caseDetails._id %>">
-                <div class="card">
-                  <div class="card-body view-button">
-                     <h4 class="card-title title">View Criminal(s)</h4>
-                  </div>
-                </div>
-              </a>
-              </div>
-          </div>
-
-
-    <% if(userType==="Admin"){ %>
       <hr>
 
       <div class="submit-button">
-        <form method="get">
-                <button class="btn btn-dark" type="submit" name="suspectButton" formaction="/addSuspect/<%= caseDetails._id %>">Add Suspect</button>
-                <span class="button-gap"></span>
-                <button class="btn btn-dark" type="submit" name="criminalButton" formaction="/addCriminal/<%= caseDetails._id %>">Add Criminal</button>
+
+        <form method="post">
+        <button type="button" class="btn btn-success ml-2" data-toggle="modal" data-target="#acceptModal">Approve</button>
+            <div class="modal fade" id="acceptModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" style="color:#7f8c8d;" id="exampleModalLabel">Assign Case ID</h5>
+                  </div>
+                    <div class="modal-body">
+                      <div class="form-group">
+                          <input type="text" class="form-control" name="assignedCaseId" placeholder="Enter Case ID" required>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-success" formaction="/acceptCaseRequest/<%= caseDetails._id%>">Approve</button>
+                    </div>
+                </div>
+              </div>
+            </div>
+        </form>
+
+          <form method="post">
+          <button type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#rejectModal">Reject</button>
+              <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" style="color:#7f8c8d;" id="exampleModalLabel">Rejecting case</h5>
+                    </div>
+                      <div class="modal-body">
+                        <div class="form-group">
+                              <textarea class="form-control" name="reasonOfRejection" placeholder="Reason of Rejection" rows="3" required></textarea>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger" formaction="/rejectCaseRequest/<%= caseDetails._id%>">Reject</button>
+                      </div>
+                  </div>
+                </div>
+              </div>
         </form>
 
       </div>
 
-      <% } %>
+  <%  } %>
 
       </div>
  </body>

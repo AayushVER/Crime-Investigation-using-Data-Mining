@@ -10,15 +10,35 @@ app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 
-let isLoggedIn = true;
+let isLoggedIn = false;
+let authorityLoggenIn = false;
 let result=[];
 let retainedSearch;
 let retainedCaseId;
 let retainedCrimes=[];
 let retainedCharges=[];
-// let currentUserId;
+let currentUserId;
+let typeOfUser;
 
 mongoose.connect("mongodb://localhost:27017/ciudm", {useNewUrlParser:true, useUnifiedTopology:true});
+
+const caseRequestSchema = {
+  subjectOrTitle: String,
+  description:  String,
+  victims: [],
+  weaponORtool: [],
+  time: String,
+  crimeCommitedOn: Date,
+  location: {
+    saddress: String,
+    city: String,
+    state:String
+  },
+  witness: [],
+  user: String,
+  status: String,
+  rejectedComment: String
+};
 
 const caseSchema = {
   _id: String,
@@ -33,7 +53,10 @@ const caseSchema = {
     city: String,
     state:String
   },
-  witness: []
+  witness: [],
+  user: String,
+  submittedBy : String,
+  status: String
 };
 
 const suspectSchema = {
@@ -130,6 +153,7 @@ const Criminal = mongoose.model("criminal", criminalSchema);
 const User = mongoose.model("user", userSchema);
 const JoinRequest = mongoose.model("joinRequest",userSchema);
 const RejectList = mongoose.model("reject",rejectedSchema);
+const CaseRequest = mongoose.model("caseRequest",caseRequestSchema);
 
 
 app.get("/",function(req,res){
@@ -187,7 +211,7 @@ app.post("/acceptRequest/:userId", function(req,res){
                 documentType: user.documentType,
                 documentId: user.documentId,
                 password: user.password,
-                type: user.searchOption
+                type: user.type
               });
 
         newUser.save(function(err){
@@ -234,13 +258,18 @@ app.post("/login",function(req,res){
 
     RejectList.findOne({_id:username}, function(err,rejected){
           if(rejected===null){
-            
+
             User.findOne({_id: username}, function(err, user){
                     if(user!==null){
                       if(user._id===username&&user.password===password){
                         isLoggedIn = true;
                         currentUserId = user._id;
-                        res.render("dashboard", {dashboardMessage: "", failureDashboardMessage:""});
+                        if(user.type==="Admin"||user.type==="Police"){
+                          typeOfUser = "Admin";
+                        }else{
+                          typeOfUser = "Public";
+                        }
+                        res.render("dashboard", {dashboardMessage: "", failureDashboardMessage:"",userType:typeOfUser});
                       }else{
                         res.render("login", {message: "*Invalid Credentials. Please try again."});
                       }
@@ -257,7 +286,7 @@ app.post("/login",function(req,res){
 
 app.get("/dashboard",function(req,res){
   if(isLoggedIn){
-    res.render("dashboard", {dashboardMessage: "", failureDashboardMessage:""})
+    res.render("dashboard", {dashboardMessage: "", failureDashboardMessage:"",userType:typeOfUser});
   }else{
     res.render("login",{message: "*Please Login"});
   }
@@ -285,20 +314,25 @@ app.get("/pendingUsers",function(req,res){
 app.get("/newCase", function(req,res){
     if(isLoggedIn){
 
-      res.render("newCase");
+      res.render("newCase",{userType:typeOfUser,caseDetails:"",caseId:""});
     }else{
       res.render("login",{message: "*Please Login"});
     }
 });
 
 app.post("/newCase", function(req,res){
+  let statusValue;
     if(isLoggedIn){
       let caseId = req.body.caseId;
+
       retainedCaseId = caseId;
       let victimsList = req.body.victims.split(",");
       let weaponORtoolList = req.body.weaponORtool.split(",");
       let witnessList = req.body.witness.split(",");
 
+      if(typeOfUser==="Admin"){
+        let requestId = req.body.requestId;
+        statusValue = "Case is Registered and under investigation";
         const newCase = new Case({
           _id: req.body.caseId,
           subjectOrTitle: req.body.caseSubjectOrTitle,
@@ -312,26 +346,63 @@ app.post("/newCase", function(req,res){
            city: req.body.city,
            state: req.body.state
           },
-          witness: witnessList
+          witness: witnessList,
+          user: currentUserId,
+          status: statusValue,
+          submittedBy:req.body.submittedBy
         });
 
         newCase.save(function(err){
           if(!err){
+            if(requestId!=="notApplicable"){
+              CaseRequest.updateOne({_id:requestId},{status: "Case is approved and Registered"}, function(err){
+                    if(err){
+                      res.send(err);
+                    }
+              })
+            }
             if(req.body.radio!==null){
                 if(req.body.radio==="suspect"){
                   res.render("newSuspectForm", {cid:caseId,newCaseMessage: "Case registered successfully!"});
                 }else if(req.body.radio==="criminal"){
                   res.render("postNewCase", {newCaseMessage: "Case registered successfully!",failure:"",profiles:"",cid:caseId});
                 }else{
-                    res.render("dashboard", {dashboardMessage: "Case registered successfully!",failureDashboardMessage:""} );
+                    res.render("dashboard", {dashboardMessage: "Case registered successfully!",failureDashboardMessage:"",userType:typeOfUser} );
                 }
-            }else{
-              res.render("dashboard", {dashboardMessage: "Case registered successfully!",failureDashboardMessage:""});
             }
-          }
-        })
+            else{
+              res.send(err);
+            }
+      }}) }
+      else{
+        statusValue = "Case is submitted. Waiting for the approval";
+        const newCase = new CaseRequest({
+          subjectOrTitle: req.body.caseSubjectOrTitle,
+          description: req.body.caseDescription,
+          victims: victimsList,
+          weaponORtool:weaponORtoolList,
+          time: req.body.time,
+          crimeCommitedOn: req.body.crimeCommitedOn,
+          location: {
+           saddress: req.body.saddress,
+           city: req.body.city,
+           state: req.body.state
+          },
+          witness: witnessList,
+          user: currentUserId,
+          status: statusValue,
+          rejectedComment: ""
+        });
+        newCase.save(function(err){
+          if(!err){
+                res.render("dashboard", {dashboardMessage: "Case registered successfully!",failureDashboardMessage:"",userType:typeOfUser});
+          }   else{
+                  res.send(err);
+                }
+        }
+      )}
     }else{
-      res.render("login",{message: "*Please Login"});
+        res.render("login",{message: "*Please Login"});
     }
 });
 
@@ -401,14 +472,25 @@ app.post("/postNewCase", function(req,res){
 
 app.get("/cases", function(req,res){
   if(isLoggedIn){
+    if(typeOfUser==="Admin"){
       Case.find(function(err,cases){
         if(!cases||err){
-          res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!"});
+          res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!",userType:typeOfUser});
         }else{
           retainedSearch=cases;
-          res.render("caseList", {cases:cases, failure:""});
+          res.render("caseList", {cases:cases, failure:"",userType:typeOfUser});
         }
       })
+    } else if(typeOfUser==="Public"){
+        CaseRequest.find({user:currentUserId}, function(err,userCases){
+          if(!userCases||err){
+            res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!",userType:typeOfUser});
+          }else{
+            retainedSearch=userCases;
+            res.render("pendingCaseList", {userCases:userCases, failure:"",userType:typeOfUser});
+          }
+        });
+    }
   }
   else{
     res.render("login",{message: "*Please Login"});
@@ -437,6 +519,75 @@ app.post("/cases", function(req,res){
       else if(!typeOfOption){
         res.redirect("/dashboard");
       }
+});
+
+app.get("/pendingCaseRequest",function(req,res){
+      if(isLoggedIn&&typeOfUser==="Admin"){
+        CaseRequest.find({status:{$nin: ["Case is approved and Registered","Case is rejected"]}},function(err,requestedCases){
+          if(!requestedCases||requestedCases.length===0){
+            res.render("pendingCaseList", {userCases:"", failure:"No record found",userType:typeOfUser});
+          }else{
+            retainedSearch=requestedCases;
+            res.render("pendingCaseList", {userCases:requestedCases, failure:"",userType:typeOfUser});
+          }
+        });
+      }else{
+        res.render("login",{message: "*Please Login"});
+      }
+});
+
+app.post("/pendingCaseRequest",function(req,res){
+  let typeOfOption = req.body.searchOption;
+    if(typeOfOption==="caseId"){
+      CaseRequest.findOne({_id:req.body.searchValue},function(err,cases){
+        if(!cases||err){
+          res.render("pendingCaseList", {userCases:retainedSearch, failure:"No cases found",userType:typeOfUser});
+        }else{
+          console.log(cases);
+          res.render("pendingCaseList", {userCases:cases, failure:"",userType:typeOfUser});
+        }
+      })
+    } else if(typeOfOption==="caseTitle"){
+      CaseRequest.findOne({subjectOrTitle:req.body.searchValue},function(err,cases){
+        if(!cases||err){
+          res.render("pendingCaseList", {userCases:retainedSearch, failure:"No cases found",userType:typeOfUser});
+        }else{
+          console.log("Inside Case Title Success : " + cases);
+          res.render("pendingCaseList", {userCases:cases, failure:"",userType:typeOfUser});
+          // res.render("pendingCaseList", {userCases:cases, failure:"",userType:typeOfUser});
+        }
+      })
+    }
+    else if(!typeOfOption){
+      res.redirect("/dashboard");
+    }
+});
+
+app.get("/viewRequestedCase/:caseId", function(req,res){
+      CaseRequest.findOne({_id:req.params.caseId}, function(err, foundCase){
+          if(!foundCase||err){
+                res.render("pendingCaseList", {userCases:retainedSearch, failure:"Something went wrong",userType:typeOfUser});
+          }else{
+            res.render("viewPendingCase", {caseDetails: foundCase, failure:"",userType:typeOfUser});
+          }
+      })
+});
+
+app.post("/acceptCaseRequest/:caseId", function(req,res){
+    let assignedCaseId = req.body.assignedCaseId;
+      CaseRequest.findOne({_id:req.params.caseId}, function(err, requestedCase){
+            console.log(requestedCase.user);
+            res.render("newCase",{userType:typeOfUser,caseDetails:requestedCase,caseId:assignedCaseId});
+      });
+});
+
+app.post("/rejectCaseRequest/:caseId", function(req,res){
+    let reasonOfRejection = req.body.reasonOfRejection;
+      CaseRequest.updateOne({_id:req.params.caseId},{status: "Case is rejected",rejectedComment:reasonOfRejection}, function(err){
+          if(err){
+            res.send(err);
+          }
+    })
 });
 
 app.post("/criminals", function(req,res){
@@ -484,7 +635,7 @@ app.get("/criminals", function(req,res){
   if(isLoggedIn){
       Criminal.find(function(err,criminals){
         if(!criminals||err){
-          res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!"});
+          res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!",userType:typeOfUser});
         }else{
           retainedSearch=criminals;
           res.render("profileList", {pageHeading:"Criminals",profiles:criminals,failure:""});
@@ -500,9 +651,9 @@ app.get("/criminals", function(req,res){
 app.get("/findcase/:caseId", function(req,res){
     Case.findOne({_id:req.params.caseId}, function(err,foundCase){
       if(!err){
-          res.render("viewCase", {caseDetails: foundCase, failure:""});
+          res.render("viewCase", {caseDetails: foundCase, failure:"",userType:typeOfUser});
       }else{
-        res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Something went wrong. Try again later."});
+        res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Something went wrong. Try again later.",userType:typeOfUser});
       }
     })
 });
@@ -512,7 +663,7 @@ app.get("/Criminals/:criminalId", function(req,res){
     if(!err){
       res.render("profileView", {profileDetails: criminal,pageHeading:"Criminal Record",failure:""});
     }else{
-      res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Something went wrong. Try again later."});
+      res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Something went wrong. Try again later.",userType:typeOfUser});
     }
   })
 });
@@ -524,7 +675,7 @@ app.get("/Suspects/:suspectId", function(req,res){
       if(!err){
           res.render("profileView", {profileDetails: suspect,pageHeading:"Suspect Record",failure:""});
       }else{
-        res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Something went wrong. Try again later."});
+        res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Something went wrong. Try again later.",userType:typeOfUser});
       }
     })
 });
@@ -580,7 +731,7 @@ app.post("/newSuspectForm", function(req,res){
       newSuspect.save(function(err, thisSuspect){
         if(!err){
           // res.redirect("/match/"+thisSuspect._id)
-          res.render("dashboard", {dashboardMessage: "Suspect added succesfully!",failureDashboardMessage:""});
+          res.render("dashboard", {dashboardMessage: "Suspect added succesfully!",failureDashboardMessage:"",userType:typeOfUser});
         }else{
           res.send(err);
         }
@@ -648,10 +799,10 @@ app.post("/newCriminalForm", function(req,res){
 
     newCriminal.save(function(err){
       if(!err){
-        res.render("dashboard", {dashboardMessage: "Criminal added succesfully!",failureDashboardMessage:""});
+        res.render("dashboard", {dashboardMessage: "Criminal added succesfully!",failureDashboardMessage:"",userType:typeOfUser});
       }else{
         console.log(err);
-        res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Operation Failed."});
+        res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Operation Failed.",userType:typeOfUser});
       }
     });
 });
@@ -661,7 +812,7 @@ app.get("/suspects", function(req,res){
   if(isLoggedIn){
       Suspect.find(function(err,suspects){
         if(!suspects||err){
-          res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!"});
+          res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!",userType:typeOfUser});
         }else{
           res.render("profileList", {pageHeading:"Suspects",profiles:suspects,failure:""});
         }
@@ -679,7 +830,7 @@ app.get("/suspectsOfCase/:caseId", function(req,res){
         if(suspects.length===0){
           Case.findOne({_id:req.params.caseId}, function(err,foundCase){
               if(!err){
-                res.render("viewCase", {caseDetails: foundCase, failure: "No suspects in the record. (If any, add them)"});
+                res.render("viewCase", {caseDetails: foundCase, failure: "No suspects in the record. (If any, add them)",userType:typeOfUser});
         }
       })
       }
@@ -698,7 +849,7 @@ app.get("/criminalsOfCase/:caseId", function(req,res){
         if(criminals.length===0){
           Case.findOne({_id:req.params.caseId}, function(err,foundCase){
               if(!err){
-                res.render("viewCase", {caseDetails: foundCase, failure: "No criminals in the record. (If any, add them)"});
+                res.render("viewCase", {caseDetails: foundCase, failure: "No criminals in the record. (If any, add them)",userType:typeOfUser});
         }
       })
   }
@@ -719,21 +870,6 @@ app.get("/operation", function(req, res){
   }
 });
 
-// app.post("/register",function(req,res){
-//   let email = req.body.email;
-//   let password = md5(req.body.password);
-//   const newUser = new User({
-//     _id: email,
-//     password: password
-//   });
-//   newUser.save(function(err){
-//     if(!err){
-//       res.send("User Addeded Succesfully");
-//     }else{
-//       res.send(err);
-//     }
-//   });
-// });
 
 app.get("/match/:sentSuspect", function(req,res){
   if(isLoggedIn){

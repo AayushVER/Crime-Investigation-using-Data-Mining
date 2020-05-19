@@ -25,7 +25,7 @@
       <%  } %>
         <h5 class="title">Case ID</h5>
         <h6 class="content"><%=profileDetails.caseId%></h6>
-        <h5 class="title">Criminal ID</h5>
+        <h5 class="title"><%= pageHeading %> ID</h5>
         <h6 class="content"><%=profileDetails._id%></h6>
         <hr>
 
@@ -78,7 +78,7 @@
           </div>
           <div class="col-sm">
             <h5 class="title">State</h5>
-            <%if (profileDetails.address.stat===""||profileDetails.address.state===null) {%>
+            <%if (profileDetails.address.state===""||profileDetails.address.state===null) {%>
                <h6 class="content">*Information not available</h6>
            <%} else {%>
             <h6 class="content"><%=profileDetails.address.state%></h6>
@@ -98,35 +98,37 @@
 
       <div class="row">
           <div class="col-sm">
-            <h5 class="title">Crime(s)</h5>
-            <div class="victin-witness-box">
-
-                <h6 class="content"><%= profileDetails.typeOfCrime %></h6>
-                <span class="wOt-victim-witness-gap"></span>
-
-            </div>
+                    <h5 class="title">Crime</h5>
+                      <% if(profileDetails.typeOfCrime[0]===null||profileDetails.typeOfCrime[0]==="") {%>
+                              <h6 class="content">*Information not available</h6>
+                      <%} else {%>
+                              <div class="victin-witness-box">
+                              <h6 class="content"><%= profileDetails.typeOfCrime %></h6>
+                              </div>
+                      <%}%>
+                      <span class="wOt-victim-witness-gap"></span>
           </div>
           <div class="col-sm">
-            <h5 class="title">Charge(s)</h5>
-            <% if(!profileDetails.charges||profileDetails.charges==="") {%>
-              <h6 class="content">*Information not available</h6>
-              <%} else {%>
-                <div class="victin-witness-box">
-                <h6 class="content"><%= profileDetails.charges %></h6>
-                <span class="wOt-victim-witness-gap"></span>
-            <%}%>
-            </div>
+                    <h5 class="title">Charge(s)</h5>
+                      <% if(profileDetails.charges[0]===null||profileDetails.charges[0]==="") {%>
+                              <h6 class="content">*Information not available</h6>
+                      <%} else {%>
+                              <div class="victin-witness-box">
+                              <h6 class="content"><%= profileDetails.charges %></h6>
+                              </div>
+                      <%}%>
+                    <span class="wOt-victim-witness-gap"></span>
           </div>
           <div class="col-sm">
-            <h5 class="title">Weapon(s)/Tool(s)</h5>
-            <% if(!profileDetails.weaponORtool||profileDetails.weaponORtool==="") {%>
-              <h6 class="content">*Information not available</h6>
-              <%} else {%>
-                <div class="victin-witness-box">
-                <h6 class="content"><%= profileDetails.weaponORtool %></h6>
-                <span class="wOt-victim-witness-gap"></span>
-            <%}%>
-            </div>
+                    <h5 class="title">Weapon(s)/Tool(s)</h5>
+                      <% if(profileDetails.weaponORtool[0]===null||profileDetails.weaponORtool[0]==="") {%>
+                              <h6 class="content">*Information not available</h6>
+                      <%} else {%>
+                              <div class="victin-witness-box">
+                              <h6 class="content"><%= profileDetails.weaponORtool %></h6>
+                              </div>
+                    <%}%>
+                    <span class="wOt-victim-witness-gap"></span>
           </div>
       </div>
 
@@ -136,12 +138,12 @@
         <div class="row">
         <div class="col-sm">
           <h5 class="title">Caught/Uncaught Partner(s)</h5>
-          <% if(!profileDetails.partners||profileDetails.partners==="") {%>
-            <h6 class="content">*Information not available</h6>
+          <% if(profileDetails.partners) {%>
+            <div class="victin-witness-box">
+            <h6 class="content"><%= profileDetails.partners %></h6>
+            <span class="wOt-victim-witness-gap"></span>
             <%} else {%>
-              <div class="victin-witness-box">
-              <h6 class="content"><%= profileDetails.partners %></h6>
-              <span class="wOt-victim-witness-gap"></span>
+              <h6 class="content">*Information not available</h6>
           <%}%>
           </div>
         </div>
@@ -188,14 +190,16 @@
               <h6 class="content"><%=profileDetails.details.eyeColor%></h6>
               <%}%>
             </div>
+
             <div class="col-sm">
               <h5 class="title">Height</h5>
-              <%if (profileDetails.details.height===""||profileDetails.details.height===null) {%>
+              <%if (profileDetails.details.height.ft===""||profileDetails.details.height.ft===null) {%>
                  <h6 class="content">*N/A</h6>
              <%} else {%>
               <h6 class="content"><%=profileDetails.details.height.ft%>'<%=profileDetails.details.height.in%></h6>
               <%}%>
             </div>
+
             <div class="col-sm">
               <h5 class="title">Handed</h5>
               <%if (profileDetails.details.handed===""||profileDetails.details.handed===null) {%>
@@ -234,10 +238,10 @@
         <h3 class="title">Vehicle(s)</h3>
         <div class="row">
             <div class="col-sm">
-                <%if (profileDetails.vehicle===""||profileDetails.vehicle===null) {%>
-                   <h6 class="content">*Information not available</h6>
+                <% if(profileDetails.vehicle[0]===null) {%>
+                   <h6 class="content"><%=profileDetails.vehicle%></h6>
                <%} else {%>
-                <h6 class="content"><%=profileDetails.vehicle%></h6>
+                 <h6 class="content">*Information not available</h6>
                 <%}%>
             </div>
         </div>

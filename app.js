@@ -314,7 +314,7 @@ app.get("/pendingUsers",function(req,res){
 app.get("/newCase", function(req,res){
     if(isLoggedIn){
 
-      res.render("newCase",{userType:typeOfUser,caseDetails:"",caseId:""});
+      res.render("newCase",{userType:typeOfUser,caseDetails:"",caseId:"",message:""});
     }else{
       res.render("login",{message: "*Please Login"});
     }
@@ -324,13 +324,14 @@ app.post("/newCase", function(req,res){
   let statusValue;
     if(isLoggedIn){
       let caseId = req.body.caseId;
-
       retainedCaseId = caseId;
+
       let victimsList = req.body.victims.split(",");
       let weaponORtoolList = req.body.weaponORtool.split(",");
       let witnessList = req.body.witness.split(",");
 
       if(typeOfUser==="Admin"){
+
         let requestId = req.body.requestId;
         statusValue = "Case is Registered and under investigation";
         const newCase = new Case({
@@ -352,29 +353,36 @@ app.post("/newCase", function(req,res){
           submittedBy:req.body.submittedBy
         });
 
-        newCase.save(function(err){
-          if(!err){
-            if(requestId!=="notApplicable"){
-              CaseRequest.updateOne({_id:requestId},{status: "Case is approved and Registered"}, function(err){
-                    if(err){
-                      res.send(err);
-                    }
-              })
+        Case.findOne({_id:caseId}, function(err,result){
+            if(result){
+                newCase._id="";
+                    res.render("newCase",{userType:typeOfUser,caseDetails:newCase,caseId:"",message:"ID already exists. Use another ID for this case"});
+            }else{
+              newCase.save(function(err){
+                if(!err){
+                  if(requestId!=="notApplicable"){
+                    CaseRequest.updateOne({_id:requestId},{status: "Case is approved and Registered"}, function(err){
+                          if(err){
+                            res.send(err);
+                          }
+                    })
+                  }
+                  if(req.body.radio!==null){
+                      if(req.body.radio==="suspect"){
+                        res.render("newSuspectForm", {cid:caseId,newCaseMessage: "Case registered successfully!"});
+                      }else if(req.body.radio==="criminal"){
+                        res.render("postNewCase", {newCaseMessage: "Case registered successfully!",failure:"",profiles:"",cid:caseId});
+                      }else{
+                          res.render("dashboard", {dashboardMessage: "Case registered successfully!",failureDashboardMessage:"",userType:typeOfUser} );
+                      }
+                  }
+                  else{
+                    res.send(err);
+                  }
+            }})
             }
-            if(req.body.radio!==null){
-                if(req.body.radio==="suspect"){
-                  res.render("newSuspectForm", {cid:caseId,newCaseMessage: "Case registered successfully!"});
-                }else if(req.body.radio==="criminal"){
-                  res.render("postNewCase", {newCaseMessage: "Case registered successfully!",failure:"",profiles:"",cid:caseId});
-                }else{
-                    res.render("dashboard", {dashboardMessage: "Case registered successfully!",failureDashboardMessage:"",userType:typeOfUser} );
-                }
-            }
-            else{
-              res.send(err);
-            }
-      }}) }
-      else{
+        })
+       }else{
         statusValue = "Case is submitted. Waiting for the approval";
         const newCase = new CaseRequest({
           subjectOrTitle: req.body.caseSubjectOrTitle,
@@ -393,15 +401,18 @@ app.post("/newCase", function(req,res){
           status: statusValue,
           rejectedComment: ""
         });
+
         newCase.save(function(err){
           if(!err){
-                res.render("dashboard", {dashboardMessage: "Case registered successfully!",failureDashboardMessage:"",userType:typeOfUser});
-          }   else{
-                  res.send(err);
-                }
-        }
-      )}
-    }else{
+            res.render("dashboard", {dashboardMessage: "Case registered successfully!",failureDashboardMessage:"",userType:typeOfUser});
+          }else{
+            res.send(err);
+          }
+        })
+
+    }}
+
+    else{
         res.render("login",{message: "*Please Login"});
     }
 });
@@ -577,7 +588,7 @@ app.post("/acceptCaseRequest/:caseId", function(req,res){
     let assignedCaseId = req.body.assignedCaseId;
       CaseRequest.findOne({_id:req.params.caseId}, function(err, requestedCase){
             console.log(requestedCase.user);
-            res.render("newCase",{userType:typeOfUser,caseDetails:requestedCase,caseId:assignedCaseId});
+            res.render("newCase",{userType:typeOfUser,caseDetails:requestedCase,caseId:assignedCaseId,message:""});
       });
 });
 

@@ -105,27 +105,8 @@
       <hr>
 
       <div class="submit-button">
-
         <form method="post">
-        <button type="button" class="btn btn-success ml-2" data-toggle="modal" data-target="#acceptModal">Approve</button>
-            <div class="modal fade" id="acceptModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" style="color:#7f8c8d;" id="exampleModalLabel">Assign Case ID</h5>
-                  </div>
-                    <div class="modal-body">
-                      <div class="form-group">
-                          <input type="text" class="form-control" name="assignedCaseId" placeholder="Enter Case ID" required>
-                      </div>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                      <button type="submit" class="btn btn-success" formaction="/acceptCaseRequest/<%= caseDetails._id%>">Approve</button>
-                    </div>
-                </div>
-              </div>
-            </div>
+        <button type="submit" class="btn btn-success" formaction="/acceptCaseRequest/<%= caseDetails._id%>">Approve</button>
         </form>
 
           <form method="post">

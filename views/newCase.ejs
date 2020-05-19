@@ -29,8 +29,11 @@
           <h5>Case Detail</h5>
           <div class="row">
             <div class="col-sm-3 marking">
-                <input class="form-control" type="text" name="caseId" value="<%= caseId %>" placeholder="Case ID" required autocomplete="off"><span class="required">*</span>
+                <input class="form-control" type="text" name="caseId" placeholder="Case ID" required autocomplete="off"><span class="required">*</span>
             </div>
+          <%  if(message){ %>
+            <p class="newCase-instruction"><%= message %></p>
+          <%   } %>
           </div>
             <%  } else { %>
             <hr>
@@ -40,7 +43,9 @@
             <h5>Complaint by</h5>
             <% if(caseDetails){ %>
                   <input type="text" class="form-control" name="submittedBy" value="<%=caseDetails.user%>" readonly>
+                <%  if(caseDetails._id!==""){ %>
                   <input type="text" class="form-control" name="requestId" value="<%=caseDetails._id%>" readonly>
+                <%  } %>
                   <hr>
                   <%  } else { %>
                   <input type="text" class="form-control w-75" name="submittedBy" placeholder="Enter the Name">
@@ -102,10 +107,10 @@
             </div>
             <div class="col-sm caseDate marking">
                 <% if(caseDetails.crimeCommitedOn){ %>
-                    <input class="form-control dateInput" type="date" name="crimeCommitedOn" required><span class="required">*</span>
+                    <input class="form-control dateInput w-25" type="date" name="crimeCommitedOn" required><span class="required">*</span>
                     <label>Select Date for - <%=caseDetails.crimeCommitedOn%></label>
               <%  }else{ %>
-                    <input class="form-control dateInput" type="date" name="crimeCommitedOn">
+                    <input class="form-control dateInput w-25" type="date" name="crimeCommitedOn">
               <%  } %>
             </div>
           </div>

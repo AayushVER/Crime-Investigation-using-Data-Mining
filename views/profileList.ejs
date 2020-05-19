@@ -22,7 +22,7 @@
   </nav>
   <div class="container profile-body">
 
-    <% if(pageHeading==="Criminals") { %>
+    <% if(pageHeading==="Criminals"&&profiles.length>5) { %>
       <div class="container search-area">
         <h5 class="form-check-label">Find Criminals by Name</h5>
         <form class="search-button-form form-inline mt-3" action="/Criminals" method="post">

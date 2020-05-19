@@ -20,7 +20,7 @@
         <a href="/dashboard"><img class="nav-item" src="/homeIcon.svg" alt="home-button"></a>
     </div>
   </nav>
-
+  <% if(cases.length>5){ %>
   <div class="container search-area-cases">
     <form class="search-button-form form-inline" action="/cases" method="post">
     <div class="form-check form-check-inline">
@@ -35,6 +35,7 @@
       <button type="submit" class="btn btn-outline-dark btn-sm" name="searchButton"><img class="button-img" src="/searchButton.svg"></button>
     </form>
   </div>
+  <% } %>
 
     <div class="container profile-body">
       <p class="failure-text"><%= failure %></p>

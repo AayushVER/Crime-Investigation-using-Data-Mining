@@ -1,19 +1,32 @@
-body{
-  /* text-align: center; */
-  background-color: #F5F5F5;
+.background-image{
+  margin-top: 2%;
+  height: 100vh;
+  background-image: url("/faint.png");
+  background-repeat: no-repeat;
+  background-position:top;
 }
 
 .home-body{
   text-align: center;
-  margin-top: 15%;
+  padding-top: 15%;
 }
 
 .successMessage{
   color: green;
 }
 
+h2{
+  display: none;
+}
+
+.sick{
+  display: none;
+}
+
 .dark-text{
-  color: #7f8c8d;
+  color: #576574;
+  /* color: #353b48; */
+  /* color: #7f8c8d; */
 }
 
 .buttons{

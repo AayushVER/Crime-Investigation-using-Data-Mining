@@ -21,8 +21,11 @@
 
     <div class="container case-body">
     <%  if(failure){ %>
+    <%      if(failure==="Criminal added successfully"||failure==="Suspect added successfully"){ %>
+                <p class="success-message"><%= failure %></p>
+    <%  } else { %>
         <p class="failure-message"><%= failure %></p>
-    <%  } %>
+    <%  }} %>
 
       <h3 class="title">Case Subject/Title</h3>
       <h4 class="content"><%= caseDetails.subjectOrTitle %></h4>

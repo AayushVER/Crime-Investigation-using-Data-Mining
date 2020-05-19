@@ -741,8 +741,13 @@ app.post("/newSuspectForm", function(req,res){
 
       newSuspect.save(function(err, thisSuspect){
         if(!err){
+          Case.findOne({_id:req.body.idCase}, function(err,foundCase){
+            if(!err){
+                res.render("viewCase", {caseDetails:foundCase, failure:"Suspect added successfully",userType:typeOfUser});
+            }});
           // res.redirect("/match/"+thisSuspect._id)
-          res.render("dashboard", {dashboardMessage: "Suspect added succesfully!",failureDashboardMessage:"",userType:typeOfUser});
+          // res.redirect("/findcase/"+req.body.idCase);
+          // res.render("dashboard", {dashboardMessage: "Suspect added succesfully!",failureDashboardMessage:"",userType:typeOfUser});
         }else{
           res.send(err);
         }
@@ -810,7 +815,11 @@ app.post("/newCriminalForm", function(req,res){
 
     newCriminal.save(function(err){
       if(!err){
-        res.render("dashboard", {dashboardMessage: "Criminal added succesfully!",failureDashboardMessage:"",userType:typeOfUser});
+        Case.findOne({_id:req.body.idCase}, function(err,foundCase){
+          if(!err){
+              res.render("viewCase", {caseDetails:foundCase, failure:"Criminal added successfully",userType:typeOfUser});
+          }});
+        // res.redirect("/findcase/"+req.body.idCase);
       }else{
         console.log(err);
         res.render("dashboard", {dashboardMessage: "",failureDashboardMessage:"Operation Failed.",userType:typeOfUser});

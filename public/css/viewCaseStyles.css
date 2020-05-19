@@ -39,6 +39,10 @@ button{
   color: red;
 }
 
+.success-message{
+  color: green;
+}
+
 .view-button{
   text-align: center;
 }

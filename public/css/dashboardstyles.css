@@ -1,5 +1,6 @@
 body{
-  background-color: white;
+  /* background-color: white; */
+  background-color: #f5f5f5;
 }
 
 .navbar{
@@ -8,7 +9,8 @@ body{
 }
 
 .dashboard-body{
-  background-color: #f1f2f6;
+  background-color: #f5f5f5;
+  background-image: url("https://www.transparenttextures.com/patterns/fabric-of-squares.png");
   height: 250px;;
 }
 

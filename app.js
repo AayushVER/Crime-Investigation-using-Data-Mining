@@ -593,10 +593,13 @@ app.post("/acceptCaseRequest/:caseId", function(req,res){
 });
 
 app.post("/rejectCaseRequest/:caseId", function(req,res){
+  console.log("Triggered");
     let reasonOfRejection = req.body.reasonOfRejection;
       CaseRequest.updateOne({_id:req.params.caseId},{status: "Case is rejected",rejectedComment:reasonOfRejection}, function(err){
           if(err){
             res.send(err);
+          }else{
+            res.redirect("/dashboard");
           }
     })
 });

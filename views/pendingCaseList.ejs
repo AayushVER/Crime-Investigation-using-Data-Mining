@@ -41,7 +41,6 @@
       <p class="failure-text"><%= failure %></p>
       <%  if(userCases.length>0){ %>
       <%   userCases.forEach(function(eachCase){ %>
-
       <div class="row">
           <div class="col-sm">
               <div class="card">
@@ -52,7 +51,7 @@
                       <% let des = eachCase.description.substring(0,100) %>
                       <p class="card-subtitle"><%= des %></p>
                       <h6 class="card-subtitle mt-1">Status : <%= eachCase.status %></h6>
-                  <%  } else { %>
+                  <%  }else{ %>
                     <h2 class="card-title"><%= eachCase.subjectOrTitle %></h2>
                     <% let des = eachCase.description.substring(0,100) %>
                     <p class="card-subtitle"><%= des %>...</p>
@@ -63,7 +62,7 @@
               </div>
           </div>
       </div>
-      <%  })} else { %>
+      <%  })} else if(userCases) { %>
         <div class="row">
             <div class="col-sm">
                 <div class="card">

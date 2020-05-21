@@ -1,8 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const ejs = require('ejs');
 const bodyParser = require("body-parser");
 const md5 = require("md5");
+const nodemailer = require('nodemailer');
 
 const app = express();
 
@@ -147,6 +149,14 @@ const rejectedSchema = {
   comment: String
 };
 
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.USER,
+    pass: process.env.PASS
+  }
+});
+
 const Case = mongoose.model("case", caseSchema);
 const Suspect = mongoose.model("suspect", suspectSchema);
 const Criminal = mongoose.model("criminal", criminalSchema);
@@ -171,7 +181,7 @@ app.get("/newUser",function(req,res){
 app.post("/addUser",function(req,res){
   let password = md5(req.body.password)
   User.findOne({_id:req.body.email}, function(err,user){
-      if(user===null){
+      if(!user){
         const newUserRequest = new JoinRequest({
           _id : req.body.email,
           fname: req.body.fname,
@@ -183,6 +193,9 @@ app.post("/addUser",function(req,res){
         });
           newUserRequest.save(function(err){
             if(!err){
+              ///////////////////////////////////////Send Email ***********************************
+              let currentStatus="Details Submitted",message="",caseId="";
+              sendMail(req.body.email,caseId,currentStatus,message);
               res.render("home", {successMessage:"Request submitted Succesfully. Once your request is approved, you will be able to Login with registered credentials."})
             }else{
               res.send(err);
@@ -198,11 +211,6 @@ app.post("/acceptRequest/:userId", function(req,res){
   if(isLoggedIn){
     let userId = req.params.userId;
       JoinRequest.findOne({_id:userId}, function(err,user){
-        JoinRequest.deleteOne({_id:userId}, function(err){
-          if(err){
-            console.log(err);
-              }
-              });
 
             const newUser = new User({
                 _id:userId,
@@ -216,8 +224,16 @@ app.post("/acceptRequest/:userId", function(req,res){
 
         newUser.save(function(err){
         if(!err){
-          JoinRequest.deleteOne({})
+          // JoinRequest.deleteOne({})
           res.redirect("/pendingUsers");
+          ////////////////////////////////////Send Mail//////////////////////****************
+          let currentCaseId="", currentStatus="Account Approved",message="";
+          sendMail(userId,currentCaseId,currentStatus,message);
+          JoinRequest.deleteOne({_id:userId}, function(err){
+            if(err){
+              console.log(err);
+                }
+          });
         }
       });
       });
@@ -240,6 +256,9 @@ app.post("/rejectRequest/:userId",function(req,res){
           newReject.save(function(err){
               if(err){
                 console.log(err);
+              }else{
+                let currentCaseId="", currentStatus="Account Rejected",message=req.body.reasonOfRejection;
+                sendMail(userId,currentCaseId,currentStatus,message);
               }
           });
 
@@ -364,6 +383,10 @@ app.post("/newCase", function(req,res){
                     CaseRequest.updateOne({_id:requestId},{status: "Case is approved and Registered"}, function(err){
                           if(err){
                             res.send(err);
+                          }else{
+                            ////////////////////////////////////////// Mailer Function Call///////
+                            let currentStatus="Case is approved and Registered",message=req.body.caseSubjectOrTitle;
+                            sendMail(req.body.submittedBy,req.body.caseId,currentStatus,message);
                           }
                     })
                   }
@@ -416,6 +439,50 @@ app.post("/newCase", function(req,res){
         res.render("login",{message: "*Please Login"});
     }
 });
+
+////////////////////////Mailer Function///////////////////////***************************
+
+function sendMail(user,caseId,status,message){
+  console.log("Email function called");
+  console.log(user);
+  console.log(caseId);
+  console.log(status);
+  let subject,content;
+
+  if(status==="Account Approved"){
+      subject=status;
+      content="Your new Account request is accepted and approved. You can Login using registered credentials. Thank you, Stay Safe."
+  }else if(status==="Account Rejected"){
+    subject=status;
+    content= "Your new Account request is rejected with comment - "+message+" : You can re-apply with valid credentials and resolving issue(s) mentioned in comment. Thank you, Stay Safe.";
+  }else if(status==="Case is approved and Registered"){
+    subject=caseId+" - Registered Case approved";
+    content="Registered case with title "+message+" is approved and registered successfully. Case is under investigation, you can check the status of investigation by logging into your account. Assigned case ID is "+caseId+" . Thank You, Stay Safe.";
+  }else if(status==="Case is rejected"){
+    subject=status;
+    content="Registered case with title "+caseId+" is rejected with comment - "+message+". For more details visit nearest Police station. Thank you, Stay Safe."
+  }
+  else if(status==="Details Submitted"){
+    subject="Details Received. Account under Review";
+    content="Your account details submitted successfully. Your account is now under review and review result will be mailed to you once the review process is completed. Thank you, Stay Safe."
+  }
+
+  let mailOptions = {
+    from:'info.ciudm@gmail.com',
+    to:user,
+    subject:subject,
+    text:content
+  };
+
+    transporter.sendMail(mailOptions, function(err,dara){
+    if(err){
+      console.log("Error");
+    }else{
+      console.log("Mail sent");
+    }
+    });
+
+}
 
 app.get("/updateCriminalRecord/:criminalId", function(req,res){
     res.render("updateCriminalForm", {criminalId: req.params.criminalId, cid: retainedCaseId});
@@ -595,10 +662,14 @@ app.post("/acceptCaseRequest/:caseId", function(req,res){
 app.post("/rejectCaseRequest/:caseId", function(req,res){
   console.log("Triggered");
     let reasonOfRejection = req.body.reasonOfRejection;
-      CaseRequest.updateOne({_id:req.params.caseId},{status: "Case is rejected",rejectedComment:reasonOfRejection}, function(err){
+      CaseRequest.findOneAndUpdate({_id:req.params.caseId},{status: "Case is rejected",rejectedComment:reasonOfRejection}, function(err, foundCase){
           if(err){
             res.send(err);
           }else{
+            ///////////////////////// Send Mail////////////////****************
+            let currentStatus="Case is rejected",user=foundCase.user,message=reasonOfRejection,caseId=foundCase.subjectOrTitle;
+            sendMail(user,caseId,currentStatus,message);
+
             res.redirect("/dashboard");
           }
     })

@@ -22,13 +22,13 @@
   </nav>
   <div class="container profile-body">
 
-    <% if(pageHeading==="Criminals"&&profiles.length>5) { %>
+    <% if(pageHeading==="Criminals") { %>
       <div class="container search-area">
         <h5 class="form-check-label">Find Criminals by Name</h5>
         <form class="search-button-form form-inline mt-3" action="/Criminals" method="post">
-          <input class="form-control search-bar mx-1" type="text" name="fname" placeholder="First Name" required>
-          <input class="form-control search-bar mx-1" type="text" name="mname" placeholder="Middle Name">
-          <input class="form-control search-bar mx-1" type="text" name="lname" placeholder="Last Name">
+          <input class="form-control search-bar mx-1" type="text" name="fname" placeholder="First Name" autocomplete="off" required>
+          <input class="form-control search-bar mx-1" type="text" name="mname" placeholder="Middle Name" autocomplete="off">
+          <input class="form-control search-bar mx-1" type="text" name="lname" placeholder="Last Name" autocomplete="off">
           <button type="submit" class="btn btn-outline-dark btn-sm" name="searchButton"><img class="button-img" src="/searchButton.svg"></button>
         </form>
         <hr>
@@ -103,7 +103,7 @@
                                     <p>Charge(s) : </p>
                                     <% profile.charges.forEach(function(charge){ %>
                                       <span class="span-width"></span>
-                                      <p><%= charge %></p>
+                                      <p><%= charge %>|</p>
                                     <% }) %>
                                     <p></p>
                                 </td>

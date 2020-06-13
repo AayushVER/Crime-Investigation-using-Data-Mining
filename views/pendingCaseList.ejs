@@ -73,7 +73,7 @@
                         <% let des = userCases.description.substring(0,100) %>
                         <p class="card-subtitle"><%= des %></p>
                         <h6 class="card-subtitle mt-1">Status : <%= userCases.status %></h6>
-                    <%  } else { %>
+                    <%  } else if(userCases.subjectOrTitle) { %>
                       <h2 class="card-title"><%= userCases.subjectOrTitle %></h2>
                       <% let des = userCases.description.substring(0,100) %>
                       <p class="card-subtitle"><%= des %>...</p>

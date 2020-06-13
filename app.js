@@ -561,11 +561,14 @@ app.get("/cases", function(req,res){
       })
     } else if(typeOfUser==="Public"){
         CaseRequest.find({user:currentUserId}, function(err,userCases){
-          if(!userCases||err){
-            res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!",userType:typeOfUser});
-          }else{
+          if(err){
+            res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"Something went wrong",userType:typeOfUser});
+          }else if(userCases.length!==0){
+
             retainedSearch=userCases;
             res.render("pendingCaseList", {userCases:userCases, failure:"",userType:typeOfUser});
+          }else{
+            res.render("dashboard", {dashboardMessage:"",failureDashboardMessage:"No record found!",userType:typeOfUser});
           }
         });
     }
@@ -580,17 +583,17 @@ app.post("/cases", function(req,res){
       if(typeOfOption==="caseId"){
         Case.findOne({_id:req.body.searchValue},function(err,cases){
           if(!cases||err){
-            res.render("caseList", {cases:retainedSearch,failure:"No record found for ID "+req.body.searchValue});
+            res.render("caseList", {cases:retainedSearch,failure:"No record found for ID "+req.body.searchValue, userType:typeOfUser});
           }else{
-            res.render("caseList", {cases:cases, failure:""});
+            res.render("caseList", {cases:cases, failure:"",userType:typeOfUser});
           }
         })
       } else if(typeOfOption==="caseTitle"){
         Case.findOne({subjectOrTitle:req.body.searchValue},function(err,cases){
           if(!cases||err){
-            res.render("caseList", {cases:retainedSearch,failure:"No record found for tittle "+req.body.searchValue});
+            res.render("caseList", {cases:retainedSearch,failure:"No record found for tittle "+req.body.searchValue, userType:typeOfUser});
           }else{
-            res.render("caseList", {cases:cases, failure:""});
+            res.render("caseList", {cases:cases, failure:"", userType:typeOfUser});
           }
         })
       }

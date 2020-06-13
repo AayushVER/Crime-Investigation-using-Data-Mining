@@ -37,9 +37,10 @@
                                     <h3 class="lname"><%= result.lastName %></h3>
 
                                   <% if(result.crimes!==""||result.crimes!==null){ %>
-                                  <% result.crimes.forEach(function(crime){ %>
                                     <span class="span-width"></span>
-                                    <p>Crime(s) : <%= crime %></p>
+                                    <p>Crime(s):</p>
+                                  <% result.crimes.forEach(function(crime){ %>
+                                    <%= crime %>
                                   <% })} %>
 
                                   <span class="gap"></span>
